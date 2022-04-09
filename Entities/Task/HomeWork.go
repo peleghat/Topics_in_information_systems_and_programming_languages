@@ -6,7 +6,6 @@ type HomeWork struct {
 	course  string
 	dueDate time.Time
 	details string
-	s       string
 	Task
 }
 
