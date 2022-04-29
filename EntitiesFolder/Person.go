@@ -1,4 +1,6 @@
-package Entities
+package EntitiesFolder
+
+import "github.com/google/uuid"
 
 type Person struct {
 	id                          string
@@ -8,7 +10,8 @@ type Person struct {
 }
 
 func NewPerson(name string, email string, favoriteProgrammingLanguage string) *Person {
-	//TODO id
-	id := "1"
-	return &Person{id: id, name: name, email: email, favoriteProgrammingLanguage: favoriteProgrammingLanguage}
+	id := uuid.New()
+	return &Person{id: id.String(), name: name, email: email, favoriteProgrammingLanguage: favoriteProgrammingLanguage}
 }
+
+// TODO - addTask(t), listTasks()

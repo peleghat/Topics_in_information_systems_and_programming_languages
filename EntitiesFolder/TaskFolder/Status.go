@@ -1,10 +1,10 @@
-package Task
+package TaskFolder
 
 type Status int
 
 const (
-	Active  Status = iota //0
-	Done                  //1
+	Active  Status = iota // 0
+	Done                  // 1
 	Unknown = -1
 )
 

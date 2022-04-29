@@ -1,11 +1,11 @@
-package Chore
+package ChoreFolder
 
 type Size int
 
 const (
-	Small   Size = iota //0
-	Medium              //1
-	Large               //2
+	Small   Size = iota // 0
+	Medium              // 1
+	Large               // 2
 	Unknown = -1
 )
 
