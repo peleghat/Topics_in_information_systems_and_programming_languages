@@ -14,6 +14,7 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// hi
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", homeLink)
 	log.Fatal(http.ListenAndServe(":8080", router))
