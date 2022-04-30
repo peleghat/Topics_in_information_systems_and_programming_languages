@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"miniProject/dbFolder"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 // TODO - Remove later
@@ -14,7 +12,8 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", homeLink)
-	log.Fatal(http.ListenAndServe(":8080", router))
+	//router := mux.NewRouter().StrictSlash(true)
+	//router.HandleFunc("/", homeLink)
+	//log.Fatal(http.ListenAndServe(":8080", router))
+	dbFolder.Create_db()
 }
