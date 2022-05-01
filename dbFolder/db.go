@@ -2,10 +2,8 @@ package dbFolder
 
 import (
 	"database/sql"
-	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
-	"os"
 )
 
 const DATABASE_NAME string = "GoDb"
@@ -27,13 +25,13 @@ const CREATE_TASKS_TABLE = "CREATE TABLE IF NOT EXISTS Tasks(" +
 	"size_chore integer);"
 
 func Create_db() {
-	config := mysql.Config{
-		User:   os.Getenv("GODB"),
-		Passwd: os.Getenv("GODB"),
-		Net:    "tcp",
-		Addr:   "localhost:3306",
-	}
-	db, err := sql.Open("mysql", config.FormatDSN())
+	//config := mysql.Config{
+	//	User:   os.Getenv("root"),
+	//	Passwd: os.Getenv("edenandpelegdb"),
+	//	Net:    "tcp",
+	//	Addr:   "localhost:3306",
+	//}
+	db, err := sql.Open("mysql", "root:edenandpelegdb@tcp(127.0.0.1:3306)/")
 	if err != nil {
 		panic(err)
 	}
@@ -59,4 +57,10 @@ func Create_db() {
 	if err != nil {
 		panic(err)
 	}
+
+	insert, err := db.Query("INSERT INTO persons NAME('eden')")
+	if err != nil {
+		panic(err)
+	}
+	defer insert.Close()
 }
