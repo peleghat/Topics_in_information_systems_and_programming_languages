@@ -1,11 +1,11 @@
-package TaskFolder
+package EntitiesFolder
 
 type Status int
 
 const (
-	Active  Status = iota // 0
-	Done                  // 1
-	Unknown = -1
+	Active        Status = iota // 0
+	Done                        // 1
+	UnknownStatus = -1
 )
 
 func createStatus(s string) Status {
@@ -14,6 +14,6 @@ func createStatus(s string) Status {
 	} else if s == "Done" {
 		return Done
 	} else {
-		return Unknown
+		return UnknownStatus
 	}
 }

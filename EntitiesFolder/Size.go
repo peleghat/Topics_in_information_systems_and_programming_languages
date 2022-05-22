@@ -1,12 +1,12 @@
-package ChoreFolder
+package EntitiesFolder
 
 type Size int
 
 const (
-	Small   Size = iota // 0
-	Medium              // 1
-	Large               // 2
-	Unknown = -1
+	Small       Size = iota // 0
+	Medium                  // 1
+	Large                   // 2
+	UnknownSize = -1
 )
 
 func createSize(s string) Size {
@@ -17,6 +17,6 @@ func createSize(s string) Size {
 	} else if s == "Large" {
 		return Large
 	} else {
-		return Unknown
+		return UnknownSize
 	}
 }
