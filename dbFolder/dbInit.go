@@ -12,8 +12,9 @@ const DatabaseName = "minidb"
 const CreatePersonsTable = "CREATE TABLE IF NOT EXISTS Persons(" +
 	"id varchar(255) NOT NULL, " +
 	"name varchar(255), " +
-	"email varchar(255) UNIQUE," +
-	"favProg varchar(255)," +
+	"email varchar(255) UNIQUE, " +
+	"favProg varchar(255), " +
+	"ActiveTaskCount integer NOT NULL, " +
 	"PRIMARY KEY (id));"
 
 const CreateTasksTable = "CREATE TABLE IF NOT EXISTS Tasks(" +
@@ -21,18 +22,16 @@ const CreateTasksTable = "CREATE TABLE IF NOT EXISTS Tasks(" +
 	"ownerId varchar(255) NOT NULL, " +
 	"status integer NOT NULL, " +
 	"taskType varchar(255) NOT NULL, " +
+	"description varchar(255) NOT NULL, " +
 	"course_homework varchar(255), " +
 	"dueDate_homework date, " +
-	"details_homework varchar(255), " +
-	"description_chore varchar(255), " +
 	"size_chore integer, " +
 	"FOREIGN KEY (ownerId) REFERENCES Persons(id));"
 
 func CreateDb() {
-
 	config := mysql.Config{
 		User:   "root",
-		Passwd: "edenandpelegdb",
+		Passwd: "Pelegedendb", //edenandpelegdb
 		Net:    "tcp",
 		Addr:   "127.0.0.1:3306",
 	}
@@ -67,7 +66,7 @@ func CreateDb() {
 func connectToDb() (error, *sql.DB) {
 	config := mysql.Config{
 		User:   "root",
-		Passwd: "edenandpelegdb",
+		Passwd: "Pelegedendb", //edenandpelegdb
 		Net:    "tcp",
 		Addr:   "127.0.0.1:3306",
 		DBName: DatabaseName,

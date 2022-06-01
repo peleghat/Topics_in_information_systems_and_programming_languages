@@ -6,29 +6,29 @@ import (
 )
 
 type Task struct {
-	Id      string
-	OwnerId string
-	Status  Status
-}
-
-type Chore struct {
+	Id          string
+	OwnerId     string
+	Status      Status
+	TaskType    string
 	Description string
-	Size        Size
-	Task        Task
 }
 
 type HomeWork struct {
 	Course  string
 	DueDate time.Time
-	Details string
 	Task    Task
+}
+
+type Chore struct {
+	Size Size
+	Task Task
 }
 
 //Task functions
 
-func NewTask(ownerId string, status Status) Task {
+func NewTask(ownerId string, status Status, taskType string, Description string) Task {
 	id := uuid.New()
-	return Task{Id: id.String(), OwnerId: ownerId, Status: status}
+	return Task{Id: id.String(), OwnerId: ownerId, Status: status, TaskType: taskType, Description: Description}
 }
 
 func (t *Task) GetId() string {
@@ -55,18 +55,26 @@ func (t *Task) SetStatus(newStatus Status) {
 	t.Status = newStatus
 }
 
+func (t *Task) GetTaskType() string {
+	return t.TaskType
+}
+
+func (t *Task) SetTaskType(taskType string) {
+	t.TaskType = taskType
+}
+
+func (t *Task) GetDescription() string {
+	return t.Description
+}
+
+func (t *Task) SetDescription(Description string) {
+	t.Description = Description
+}
+
 //Chore functions
 
-func NewChore(description string, size Size, task Task) Chore {
-	return Chore{Description: description, Size: size, Task: task}
-}
-
-func (c *Chore) GetDescription() string {
-	return c.Description
-}
-
-func (c *Chore) SetDescription(description string) {
-	c.Description = description
+func NewChore(size Size, task Task) Chore {
+	return Chore{Size: size, Task: task}
 }
 
 func (c *Chore) GetSize() Size {
@@ -87,8 +95,8 @@ func ClockUpdate(toUpdate string) time.Time {
 	return myClock
 }
 
-func NewHomeWork(course string, dueDate string, details string, task Task) HomeWork {
-	return HomeWork{Course: course, DueDate: ClockUpdate(dueDate), Details: details, Task: task}
+func NewHomeWork(course string, dueDate time.Time, task Task) HomeWork {
+	return HomeWork{Course: course, DueDate: dueDate, Task: task}
 }
 
 func (h *HomeWork) GetCourse() string {
@@ -105,12 +113,4 @@ func (h *HomeWork) GetDueDate() time.Time {
 
 func (h *HomeWork) SetDueDate(dueDate time.Time) {
 	h.DueDate = dueDate
-}
-
-func (h *HomeWork) GetDetails() string {
-	return h.Details
-}
-
-func (h *HomeWork) SetDetails(details string) {
-	h.Details = details
 }
