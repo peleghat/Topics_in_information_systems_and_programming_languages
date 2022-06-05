@@ -2,8 +2,8 @@ package dbFolder
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/go-sql-driver/mysql"
-	_ "github.com/go-sql-driver/mysql"
 	"log"
 )
 
@@ -28,10 +28,11 @@ const CreateTasksTable = "CREATE TABLE IF NOT EXISTS Tasks(" +
 	"size_chore integer, " +
 	"FOREIGN KEY (ownerId) REFERENCES Persons(id));"
 
+// CreateDb function crates a new database and set up the new tables
 func CreateDb() {
 	config := mysql.Config{
 		User:   "root",
-		Passwd: "Pelegedendb", //edenandpelegdb
+		Passwd: "Pelegedendb", // edenandpelegdb
 		Net:    "tcp",
 		Addr:   "127.0.0.1:3306",
 	}
@@ -60,9 +61,11 @@ func CreateDb() {
 	if err != nil {
 		panic(err)
 	}
-
+	fmt.Println("db was created")
 }
 
+// KillDb function Used for debugging and testing purposes
+// Drops the database after main
 func KillDb() {
 	err, db := connectToDb()
 	_, err = db.Exec("DROP DATABASE minidb")
@@ -71,10 +74,11 @@ func KillDb() {
 	}
 }
 
+// the function connects to the database, if succeed returns the database itself, else returns err
 func connectToDb() (error, *sql.DB) {
 	config := mysql.Config{
 		User:   "root",
-		Passwd: "Pelegedendb", //edenandpelegdb
+		Passwd: "Pelegedendb", // edenandpelegdb
 		Net:    "tcp",
 		Addr:   "127.0.0.1:3306",
 		DBName: DatabaseName,
@@ -82,7 +86,6 @@ func connectToDb() (error, *sql.DB) {
 	db, err := sql.Open("mysql", config.FormatDSN())
 	if err != nil {
 		log.Fatal("Failed To connect")
-		panic(err.Error())
 		return err, nil
 	}
 	pingErr := db.Ping()

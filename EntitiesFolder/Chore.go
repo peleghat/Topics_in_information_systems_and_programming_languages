@@ -14,18 +14,18 @@ func NewChore(size Size, task Task) Chore {
 
 // Getters
 
-func (c *Chore) GetSize() Size {
+func (c Chore) GetSize() Size {
 	return c.Size
 }
-func (c *Chore) GetTask() Task {
+func (c Chore) GetTask() Task {
 	return c.Task
 }
 
 // Setters
 
-func (c *Chore) SetSize(size Size) {
+func (c Chore) SetSize(size Size) {
 	c.Size = size
 }
-func (c *Chore) SetTask(task Task) {
+func (c Chore) SetTask(task Task) {
 	c.Task = task
 }

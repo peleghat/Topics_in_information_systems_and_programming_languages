@@ -19,25 +19,25 @@ func NewHomeWork(course string, dueDate time.Time, task Task) HomeWork {
 
 // Getters
 
-func (h *HomeWork) GetCourse() string {
+func (h HomeWork) GetCourse() string {
 	return h.Course
 }
-func (h *HomeWork) GetDueDate() time.Time {
+func (h HomeWork) GetDueDate() time.Time {
 	return h.DueDate
 }
-func (h *HomeWork) GetTask() Task {
+func (h HomeWork) GetTask() Task {
 	return h.Task
 }
 
 // Setters
 
-func (h *HomeWork) SetCourse(course string) {
+func (h HomeWork) SetCourse(course string) {
 	h.Course = course
 }
-func (h *HomeWork) SetDueDate(dueDate time.Time) {
+func (h HomeWork) SetDueDate(dueDate time.Time) {
 	h.DueDate = dueDate
 }
-func (h *HomeWork) SetTask(task Task) {
+func (h HomeWork) SetTask(task Task) {
 	h.Task = task
 }
 

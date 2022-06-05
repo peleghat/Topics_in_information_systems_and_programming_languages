@@ -9,8 +9,8 @@ import (
 
 func main() {
 	dbFolder.CreateDb()
-	fmt.Println("db was created")
 	defer dbFolder.KillDb()
+
 	p1 := EntitiesFolder.NewPerson("peleg", "gmail1", "go")
 	p2 := EntitiesFolder.NewPerson("peleg", "gmail2", "go")
 	dbFolder.InsertPerson(p1)
@@ -24,8 +24,11 @@ func main() {
 	c := EntitiesFolder.NewChore(2, tChore)
 	dbFolder.AddChore(c)
 	chore, homework := dbFolder.GetTask(tHomework.GetId())
-	fmt.Println("chore is", chore == EntitiesFolder.Chore{})
-	fmt.Println("homerwork is", homework == EntitiesFolder.HomeWork{})
+	fmt.Println("chore is", chore)
+	fmt.Println("homerwork is", homework)
+	chore2, homework2 := dbFolder.GetTask(tChore.GetId())
+	fmt.Println("chore is", chore2)
+	fmt.Println("homerwork is", homework2)
 
 	/*p1 := EntitiesFolder.NewPerson("peleg", "gmail1", "go")
 	dbFolder.InsertPerson(p1)
