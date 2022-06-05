@@ -155,6 +155,64 @@ func AddChore(c EntitiesFolder.Chore) bool {
 	return true
 }
 
+func GetTaskFromDb(id string) EntitiesFolder.Task {
+	err, db := connectToDb()
+	if err != nil {
+		panic(err)
+		fmt.Println("Unable to connect to the DB")
+		return EntitiesFolder.Task{}
+	}
+	defer db.Close()
+	q := "SELECT id,ownerId,status,taskType,description FROM Tasks WHERE id =?"
+	var taskOutput EntitiesFolder.Task
+	err = db.QueryRow(q, id).Scan(&taskOutput.Id, &taskOutput.OwnerId, &taskOutput.Status, &taskOutput.TaskType, &taskOutput.Description)
+	if err != nil {
+		panic(err.Error())
+		fmt.Println("unable to get the task from the DB")
+		return EntitiesFolder.Task{}
+	}
+	return taskOutput
+}
+
+func GetChoreFromDb(id string) EntitiesFolder.Chore {
+	err, db := connectToDb()
+	if err != nil {
+		panic(err)
+		fmt.Println("Unable to connect to the DB")
+		return EntitiesFolder.Chore{}
+	}
+	defer db.Close()
+	q := "SELECT size_chore FROM Tasks WHERE id =?"
+	var size int
+	err = db.QueryRow(q, id).Scan(&size)
+	if err != nil {
+		panic(err.Error())
+		fmt.Println("unable to get the task from the DB")
+		return EntitiesFolder.Chore{}
+	}
+	return EntitiesFolder.NewChore(EntitiesFolder.Size(size), GetTaskFromDb(id))
+}
+
+func GetHomeWorkFromDb(id string) EntitiesFolder.HomeWork {
+	err, db := connectToDb()
+	if err != nil {
+		panic(err)
+		fmt.Println("Unable to connect to the DB")
+		return EntitiesFolder.HomeWork{}
+	}
+	defer db.Close()
+	q := "SELECT course_homework, dueDate_homework FROM Tasks WHERE id =?"
+	var _Course string
+	var _DueDate string
+	err = db.QueryRow(q, id).Scan(&_Course, &_DueDate)
+	if err != nil {
+		panic(err.Error())
+		fmt.Println("unable to get the task from the DB")
+		return EntitiesFolder.HomeWork{}
+	}
+	return EntitiesFolder.NewHomeWork(_Course, EntitiesFolder.ClockUpdate(_DueDate), GetTaskFromDb(id))
+}
+
 func GetTask(id string) (EntitiesFolder.Chore, EntitiesFolder.HomeWork) {
 	err, db := connectToDb()
 	if err != nil {
@@ -163,23 +221,13 @@ func GetTask(id string) (EntitiesFolder.Chore, EntitiesFolder.HomeWork) {
 		return EntitiesFolder.Chore{}, EntitiesFolder.HomeWork{}
 	}
 	defer db.Close()
-	var taskOutput EntitiesFolder.Task
-	q := "SELECT * FROM Tasks WHERE id =?"
-	err = db.QueryRow(q, id).Scan(&taskOutput.Id, &taskOutput.OwnerId, &taskOutput.Status, &taskOutput.TaskType, &taskOutput.Description)
-	if err != nil {
-		panic(err.Error())
-		fmt.Println("unable to get the person from the DB")
-		return EntitiesFolder.Chore{}, EntitiesFolder.HomeWork{}
-	}
-	if taskOutput.GetTaskType() == "Chore" {
-		var choreOutput EntitiesFolder.Chore
-		err = db.QueryRow(q, id).Scan(&choreOutput.Size)
-		fmt.Println("success getting chore from the DB")
-		return EntitiesFolder.NewChore(choreOutput.GetSize(), taskOutput), EntitiesFolder.HomeWork{}
+	//var taskOutput EntitiesFolder.Task
+	task := GetTaskFromDb(id)
+	if task.GetTaskType() == "Chore" {
+		return GetChoreFromDb(id), EntitiesFolder.HomeWork{}
+	} else if task.GetTaskType() == "Homework" {
+		return EntitiesFolder.Chore{}, GetHomeWorkFromDb(id)
 	} else {
-		var homeworkOutput EntitiesFolder.HomeWork
-		err = db.QueryRow(q, id).Scan(&homeworkOutput.Course, &homeworkOutput.DueDate)
-		fmt.Println("success getting homework from the DB")
-		return EntitiesFolder.Chore{}, EntitiesFolder.NewHomeWork(homeworkOutput.GetCourse(), homeworkOutput.GetDueDate(), taskOutput)
+		return EntitiesFolder.Chore{}, EntitiesFolder.HomeWork{}
 	}
 }

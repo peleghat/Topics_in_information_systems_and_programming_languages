@@ -63,6 +63,14 @@ func CreateDb() {
 
 }
 
+func KillDb() {
+	err, db := connectToDb()
+	_, err = db.Exec("DROP DATABASE minidb")
+	if err != nil {
+		panic(err)
+	}
+}
+
 func connectToDb() (error, *sql.DB) {
 	config := mysql.Config{
 		User:   "root",

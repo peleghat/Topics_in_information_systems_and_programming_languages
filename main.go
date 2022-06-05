@@ -10,22 +10,22 @@ import (
 func main() {
 	dbFolder.CreateDb()
 	fmt.Println("db was created")
+	defer dbFolder.KillDb()
 	p1 := EntitiesFolder.NewPerson("peleg", "gmail1", "go")
 	p2 := EntitiesFolder.NewPerson("peleg", "gmail2", "go")
 	dbFolder.InsertPerson(p1)
 	dbFolder.InsertPerson(p2)
 
-	t_homework := EntitiesFolder.NewTask(p1.GetId(), 1, "Homework", "pliz finish")
-	h := EntitiesFolder.NewHomeWork("Hedva", EntitiesFolder.ClockUpdate("1996-10-10"), t_homework)
+	tHomework := EntitiesFolder.NewTask(p1.GetId(), 1, "Homework", "pliz finish")
+	h := EntitiesFolder.NewHomeWork("Hedva", EntitiesFolder.ClockUpdate("1996-10-10"), tHomework)
 	dbFolder.AddHomeWork(h)
 
-	t_chore := EntitiesFolder.NewTask(p2.GetId(), 2, "Chore", "pliz finish 2")
-	c := EntitiesFolder.NewChore(2, t_chore)
+	tChore := EntitiesFolder.NewTask(p2.GetId(), 2, "Chore", "pliz finish 2")
+	c := EntitiesFolder.NewChore(2, tChore)
 	dbFolder.AddChore(c)
-	// getTask is not working, because we passed 5 arguments to scan instead of 8
-	// hello world
-	//chore, _ := dbFolder.GetTask(t_homework.GetId())
-	//fmt.Println("the homework is ", chore)
+	chore, homework := dbFolder.GetTask(tHomework.GetId())
+	fmt.Println("chore is", chore == EntitiesFolder.Chore{})
+	fmt.Println("homerwork is", homework == EntitiesFolder.HomeWork{})
 
 	/*p1 := EntitiesFolder.NewPerson("peleg", "gmail1", "go")
 	dbFolder.InsertPerson(p1)
