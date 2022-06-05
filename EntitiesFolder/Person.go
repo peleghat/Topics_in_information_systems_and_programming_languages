@@ -1,6 +1,9 @@
 package EntitiesFolder
 
-import "github.com/google/uuid"
+// TODO - addTask(t) - Using IncActiveTaskCount and DecActiveTaskCount, listTasks()
+import (
+	"github.com/google/uuid"
+)
 
 type Person struct {
 	Id              string `json:"id"`
@@ -10,12 +13,14 @@ type Person struct {
 	ActiveTaskCount int    `json:"activeTaskCount"`
 }
 
+// Constructor
+
 func NewPerson(name string, email string, favProg string) Person {
 	id := uuid.New()
 	return Person{Id: id.String(), Name: name, Email: email, FavProg: favProg, ActiveTaskCount: 0}
 }
 
-// TODO - addTask(t), listTasks()
+// Getters
 
 func (p Person) GetId() string {
 	return p.Id
@@ -29,19 +34,34 @@ func (p Person) GetEmail() string {
 func (p Person) GetFavProg() string {
 	return p.FavProg
 }
-
 func (p Person) GetActiveTaskCount() int {
 	return p.ActiveTaskCount
 }
 
+// Setters
+
+func (p Person) SetId(_Id string) {
+	p.Id = _Id
+}
+func (p Person) SetName(_Name string) {
+	p.Name = _Name
+}
+func (p Person) SetEmail(_Email string) {
+	p.Email = _Email
+}
+func (p Person) SetFavProg(_FavProg string) {
+	p.FavProg = _FavProg
+}
+func (p Person) SetActiveTaskCount(_ActiveTaskCount int) {
+	p.ActiveTaskCount = _ActiveTaskCount
+}
+
+// IncActiveTaskCount Increment Active Task counter
 func (p Person) IncActiveTaskCount() {
 	p.ActiveTaskCount++
 }
 
+// DecActiveTaskCount Decrement Active Task counter
 func (p Person) DecActiveTaskCount() {
 	p.ActiveTaskCount--
-}
-
-func (p Person) SetActiveTaskCount(NewActiveTaskCount int) {
-	p.ActiveTaskCount = NewActiveTaskCount
 }
