@@ -73,7 +73,7 @@ func GetAllPersons() []EntitiesFolder.Person {
 	defer db.Close()
 	personId, err := db.Query("SELECT id FROM Persons")
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 		return []EntitiesFolder.Person{}
 	}
 	var personList []EntitiesFolder.Person
@@ -226,4 +226,127 @@ func GetTask(id string) (EntitiesFolder.Chore, EntitiesFolder.HomeWork) {
 	} else {
 		return EntitiesFolder.Chore{}, EntitiesFolder.HomeWork{}
 	}
+}
+
+// GetAllTTasks function returns the list of all the Tasks in the Task table
+// if it succeeds else returns an empty HomeWork list and an empty Chore List
+func GetAllTTasks() ([]EntitiesFolder.Chore, []EntitiesFolder.HomeWork) {
+	err, db := connectToDb()
+	if err != nil {
+		panic(err)
+		return []EntitiesFolder.Chore{}, []EntitiesFolder.HomeWork{}
+	}
+	defer db.Close()
+	TaskIds, err := db.Query("SELECT id FROM Tasks")
+	if err != nil {
+		panic(err.Error())
+		return []EntitiesFolder.Chore{}, []EntitiesFolder.HomeWork{}
+	}
+	var ChoreList []EntitiesFolder.Chore
+	var HomeWorkList []EntitiesFolder.HomeWork
+	emptyChore := EntitiesFolder.Chore{}
+	emptyHomeWork := EntitiesFolder.HomeWork{}
+	for TaskIds.Next() {
+		var _id string
+		err = TaskIds.Scan(&_id)
+		if err != nil {
+			panic(err)
+			return []EntitiesFolder.Chore{}, []EntitiesFolder.HomeWork{}
+		}
+		Chore, HomeWork := GetTask(_id)
+		if Chore != emptyChore {
+			ChoreList = append(ChoreList, Chore)
+		}
+		if HomeWork != emptyHomeWork {
+			HomeWorkList = append(HomeWorkList, HomeWork)
+		}
+	}
+	return ChoreList, HomeWorkList
+}
+
+// DeleteTask function deletes a Task from the Tasks table,
+// returns a boolean which says if the deletion was a success or a failure
+// Gets a task!
+func DeleteTask(t EntitiesFolder.Task) bool {
+	err, db := connectToDb()
+	if err != nil {
+		panic(err)
+		return false
+	}
+	defer db.Close()
+	q := "DELETE FROM Tasks WHERE id =?"
+	_, err = db.Query(q, t.GetId())
+	if err != nil {
+		panic(err.Error())
+		return false
+	}
+	return true
+}
+
+// UpdateTask function update a Task's details (getting the task by its id)
+// returns a boolean which says if the update was a success or a failure
+func UpdateTask(t EntitiesFolder.Task) bool {
+	err, db := connectToDb()
+	if err != nil {
+		panic(err)
+		return false
+	}
+	defer db.Close()
+	q := "UPDATE Tasks SET status = ?, description = ? where id = ?"
+	res, err := db.Query(q, t.GetStatus(), "t.GetDescription()", t.GetId())
+	if err != nil {
+		panic(err)
+		return false
+	}
+	defer res.Close()
+	return true
+}
+
+// GetTasksFromPerson function returns the list of tasks of a specific person
+// if succeeds else, returns an empty Chore list and an empty HomeWork List
+func GetTasksFromPerson(p EntitiesFolder.Person) ([]EntitiesFolder.Chore, []EntitiesFolder.HomeWork) {
+	err, db := connectToDb()
+	if err != nil {
+		panic(err)
+		return []EntitiesFolder.Chore{}, []EntitiesFolder.HomeWork{}
+	}
+	defer db.Close()
+	q := "SELECT id FROM Tasks WHERE ownerId = ?"
+	TaskIds, err := db.Query(q, p.GetId())
+	if err != nil {
+		panic(err)
+		return []EntitiesFolder.Chore{}, []EntitiesFolder.HomeWork{}
+	}
+	var ChoreList []EntitiesFolder.Chore
+	var HomeWorkList []EntitiesFolder.HomeWork
+	emptyChore := EntitiesFolder.Chore{}
+	emptyHomeWork := EntitiesFolder.HomeWork{}
+	for TaskIds.Next() {
+		var _id string
+		err = TaskIds.Scan(&_id)
+		if err != nil {
+			panic(err)
+			return []EntitiesFolder.Chore{}, []EntitiesFolder.HomeWork{}
+		}
+		Chore, HomeWork := GetTask(_id)
+		if Chore != emptyChore {
+			ChoreList = append(ChoreList, Chore)
+		}
+		if HomeWork != emptyHomeWork {
+			HomeWorkList = append(HomeWorkList, HomeWork)
+		}
+	}
+	return ChoreList, HomeWorkList
+}
+
+// GetPersonFromTask function returns the corresponding person to a specific task
+// if succeeds, else returns an empty person instance
+func GetPersonFromTask(t EntitiesFolder.Task) EntitiesFolder.Person {
+	err, db := connectToDb()
+	if err != nil {
+		panic(err)
+		return EntitiesFolder.Person{}
+	}
+	defer db.Close()
+	return GetPerson(t.GetOwnerId())
 }
