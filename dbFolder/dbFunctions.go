@@ -71,20 +71,20 @@ func GetAllPersons() []EntitiesFolder.Person {
 		return []EntitiesFolder.Person{}
 	}
 	defer db.Close()
-	personsRes, err := db.Query("SELECT * FROM Persons")
+	personId, err := db.Query("SELECT id FROM Persons")
 	if err != nil {
 		panic(err.Error())
 		return []EntitiesFolder.Person{}
 	}
 	var personList []EntitiesFolder.Person
-	for personsRes.Next() {
-		var person EntitiesFolder.Person
-		err = personsRes.Scan(&person.Id, &person.Name, &person.Email, &person.FavProg, &person.ActiveTaskCount)
+	for personId.Next() {
+		var _id string
+		err = personId.Scan(&_id)
 		if err != nil {
 			panic(err)
 			return []EntitiesFolder.Person{}
 		}
-		personList = append(personList, person)
+		personList = append(personList, GetPerson(_id))
 	}
 	return personList
 }
