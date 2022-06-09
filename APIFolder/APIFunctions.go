@@ -1,5 +1,8 @@
 package APIFolder
 
+// TODO - Add comments
+// TODO - Errors, and comments for the 4 functions we wrote
+
 import (
 	"encoding/json"
 	"fmt"
@@ -10,6 +13,8 @@ import (
 	"net/http"
 )
 
+// AddPerson function adds a person to the database.
+// Checks if the person email is unique, if not return error
 func AddPerson(w http.ResponseWriter, r *http.Request) {
 	var newPersonInput EntitiesFolder.PersonInput
 	json.NewDecoder(r.Body).Decode(&newPersonInput)
@@ -49,6 +54,7 @@ func AddPerson(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetAllPersons functions return all persons in the db.
 func GetAllPersons(w http.ResponseWriter, r *http.Request) {
 	err, persons := dbFolder.GetAllPersons()
 	if err != nil {
@@ -73,6 +79,7 @@ func GetPerson(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(EntitiesFolder.PersonToOutput(person))
 	}
 }
+
 func UpdatePerson(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var PersonInput EntitiesFolder.PersonInput
@@ -112,9 +119,8 @@ func UpdatePerson(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Person updated successfully. Response body contains updated data."))
+		w.Write([]byte("Person updated successfully. Response body contains updated data.\n"))
 		json.NewEncoder(w).Encode(EntitiesFolder.PersonToOutput(PersonToUpdate))
-
 	}
 }
 

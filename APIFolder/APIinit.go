@@ -11,6 +11,10 @@ import (
 func InitServer() {
 	// Init router
 	r := mux.NewRouter()
+	r.Methods("OPTIONS").HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		})
 
 	// router handler - Endpoints
 	// people endpoint
