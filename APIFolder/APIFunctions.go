@@ -114,6 +114,7 @@ func UpdatePerson(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Person updated successfully. Response body contains updated data."))
 		json.NewEncoder(w).Encode(EntitiesFolder.PersonToOutput(PersonToUpdate))
+
 	}
 }
 
