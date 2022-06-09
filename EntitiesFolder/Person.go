@@ -9,7 +9,7 @@ type Person struct {
 	ID              string `json:"id"`
 	Name            string `json:"name"`
 	Email           string `json:"email"`
-	FavProg         string `json:"favProg"`
+	FavProg         string `json:"favoriteProgrammingLanguage"`
 	ActiveTaskCount int    `json:"activeTaskCount"`
 }
 

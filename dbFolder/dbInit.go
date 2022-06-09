@@ -32,7 +32,7 @@ const CreateTasksTable = "CREATE TABLE IF NOT EXISTS Tasks(" +
 func CreateDb() {
 	config := mysql.Config{
 		User:   "root",
-		Passwd: "Pelegedendb", // edenandpelegdb
+		Passwd: "edenandpelegdb", //  Pelegedendb
 		Net:    "tcp",
 		Addr:   "127.0.0.1:3306",
 	}
@@ -78,7 +78,7 @@ func KillDb() {
 func connectToDb() (error, *sql.DB) {
 	config := mysql.Config{
 		User:   "root",
-		Passwd: "Pelegedendb", // edenandpelegdb
+		Passwd: "edenandpelegdb", // Pelegedendb
 		Net:    "tcp",
 		Addr:   "127.0.0.1:3306",
 		DBName: DatabaseName,

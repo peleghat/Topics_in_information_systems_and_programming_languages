@@ -44,48 +44,51 @@ func DeletePerson(p EntitiesFolder.Person) bool {
 
 // GetPerson function gets a Person from the person table by his id,
 // returns the person's instance if it succeeds else returns an empty person instance
-func GetPerson(id string) EntitiesFolder.Person {
+func GetPerson(id string) (error, EntitiesFolder.Person) {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
-		return EntitiesFolder.Person{}
+		return ErrorsFolder.ErrDbConnection, EntitiesFolder.Person{}
+
 	}
 	defer db.Close()
 	var personOutput EntitiesFolder.Person
 	q := "SELECT * FROM Persons WHERE id =?"
 	err = db.QueryRow(q, id).Scan(&personOutput.ID, &personOutput.Name, &personOutput.Email, &personOutput.FavProg, &personOutput.ActiveTaskCount)
 	if err != nil {
-		panic(err)
-		return EntitiesFolder.Person{}
+		return ErrorsFolder.ErrNotExist, EntitiesFolder.Person{}
+
 	}
-	return personOutput
+	return nil, personOutput
 }
 
 // GetAllPersons function returns the list of all the persons in the person table
 // if it succeeds else returns an empty person list
-func GetAllPersons() []EntitiesFolder.Person {
+func GetAllPersons() (error, []EntitiesFolder.Person) {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
-		return []EntitiesFolder.Person{}
+		return ErrorsFolder.ErrDbConnection, []EntitiesFolder.Person{}
 	}
 	defer db.Close()
 	personId, err := db.Query("SELECT id FROM Persons")
 	if err != nil {
-		panic(err)
-		return []EntitiesFolder.Person{}
+		return ErrorsFolder.ErrNotExist, []EntitiesFolder.Person{}
 	}
 	var personList []EntitiesFolder.Person
 	for personId.Next() {
 		var _id string
 		err = personId.Scan(&_id)
 		if err != nil {
-			panic(err)
-			return []EntitiesFolder.Person{}
+			return ErrorsFolder.ErrIllegalValues, []EntitiesFolder.Person{}
 		}
-		personList = append(personList, GetPerson(_id))
+		err, personId := GetPerson(_id)
+		if err != nil {
+			return ErrorsFolder.ErrNotExist, []EntitiesFolder.Person{}
+
+		} else {
+			personList = append(personList, personId)
+		}
 	}
-	return personList
+	return nil, personList
 }
 
 // UpdatePerson function update a Person's details (getting person by his id)
@@ -340,12 +343,17 @@ func GetTasksFromPerson(p EntitiesFolder.Person) ([]EntitiesFolder.Chore, []Enti
 
 // GetPersonFromTask function returns the corresponding person to a specific task
 // if succeeds, else returns an empty person instance
-func GetPersonFromTask(t EntitiesFolder.Task) EntitiesFolder.Person {
+func GetPersonFromTask(t EntitiesFolder.Task) (error, EntitiesFolder.Person) {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
-		return EntitiesFolder.Person{}
+		return ErrorsFolder.ErrDbConnection, EntitiesFolder.Person{}
 	}
 	defer db.Close()
-	return GetPerson(t.GetOwnerId())
+	err, personId := GetPerson(t.GetOwnerId())
+	if err != nil {
+		return ErrorsFolder.ErrNotExist, EntitiesFolder.Person{}
+
+	} else {
+		return nil, personId
+	}
 }

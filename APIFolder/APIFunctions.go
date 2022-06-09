@@ -3,6 +3,7 @@ package APIFolder
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"miniProject/EntitiesFolder"
 	"miniProject/ErrorsFolder"
 	"miniProject/dbFolder"
@@ -49,10 +50,28 @@ func AddPerson(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllPersons(w http.ResponseWriter, r *http.Request) {
-
+	err, persons := dbFolder.GetAllPersons()
+	if err != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Errorf("query to the db has failed").Error()))
+	} else {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(EntitiesFolder.PersonsToOutput(persons))
+	}
 }
-func GetPerson(w http.ResponseWriter, r *http.Request) {
 
+func GetPerson(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	err, person := dbFolder.GetPerson(params["id"])
+	if err != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Errorf("A person with the id %s does not exist", params["id"]).Error()))
+	} else {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(EntitiesFolder.PersonToOutput(person))
+	}
 }
 func UpdatePerson(w http.ResponseWriter, r *http.Request) {
 
