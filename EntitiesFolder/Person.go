@@ -6,7 +6,7 @@ import (
 )
 
 type Person struct {
-	Id              string `json:"id"`
+	ID              string `json:"id"`
 	Name            string `json:"name"`
 	Email           string `json:"email"`
 	FavProg         string `json:"favProg"`
@@ -17,13 +17,13 @@ type Person struct {
 
 func NewPerson(name string, email string, favProg string) Person {
 	id := uuid.New()
-	return Person{Id: id.String(), Name: name, Email: email, FavProg: favProg, ActiveTaskCount: 0}
+	return Person{ID: id.String(), Name: name, Email: email, FavProg: favProg, ActiveTaskCount: 0}
 }
 
 // Getters
 
 func (p Person) GetId() string {
-	return p.Id
+	return p.ID
 }
 func (p Person) GetName() string {
 	return p.Name
@@ -41,7 +41,7 @@ func (p Person) GetActiveTaskCount() int {
 // Setters
 
 func (p Person) SetId(_Id string) {
-	p.Id = _Id
+	p.ID = _Id
 }
 func (p Person) SetName(_Name string) {
 	p.Name = _Name

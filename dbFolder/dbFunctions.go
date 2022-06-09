@@ -2,27 +2,26 @@ package dbFolder
 
 import (
 	"miniProject/EntitiesFolder"
+	"miniProject/ErrorsFolder"
 )
 
 // Persons Table Functions
 
 // InsertPerson function inserts a new Person to the person table,
 // returns a boolean which says if the insertion was a success or a failure
-func InsertPerson(p EntitiesFolder.Person) bool {
+func InsertPerson(p EntitiesFolder.Person) error {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
-		return false
+		return ErrorsFolder.ErrDbConnection
 	}
 	defer db.Close()
 	q := "INSERT INTO Persons VALUES ( ?, ?, ?, ?, ?)"
 	insertResult, err := db.Query(q, p.GetId(), p.GetName(), p.GetEmail(), p.GetFavProg(), p.GetActiveTaskCount())
 	if err != nil {
-		panic(err.Error())
-		return false
+		return ErrorsFolder.ErrAlreadyExist
 	}
 	defer insertResult.Close()
-	return true
+	return nil
 }
 
 // DeletePerson function deletes a Person from the person table,
@@ -54,7 +53,7 @@ func GetPerson(id string) EntitiesFolder.Person {
 	defer db.Close()
 	var personOutput EntitiesFolder.Person
 	q := "SELECT * FROM Persons WHERE id =?"
-	err = db.QueryRow(q, id).Scan(&personOutput.Id, &personOutput.Name, &personOutput.Email, &personOutput.FavProg, &personOutput.ActiveTaskCount)
+	err = db.QueryRow(q, id).Scan(&personOutput.ID, &personOutput.Name, &personOutput.Email, &personOutput.FavProg, &personOutput.ActiveTaskCount)
 	if err != nil {
 		panic(err)
 		return EntitiesFolder.Person{}
