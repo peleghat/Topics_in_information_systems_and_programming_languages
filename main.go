@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"miniProjectV2/EntitiesFolder"
 	"miniProjectV2/dbFolder"
@@ -9,7 +10,7 @@ import (
 func main() {
 	dbFolder.CreateDb()
 	defer dbFolder.KillDb()
-	"asdasdasdasdasdasdasd"
+	fmt.Println("asd")
 
 	p1 := EntitiesFolder.NewPerson("peleg", "gmail1", "go")
 	p2 := EntitiesFolder.NewPerson("peleg", "gmail2", "go")
