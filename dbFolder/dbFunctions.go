@@ -1,7 +1,7 @@
 package dbFolder
 
 import (
-	"miniProjectV2/EntitiesFolder"
+	"miniProject/EntitiesFolder"
 )
 
 // Persons Table Functions

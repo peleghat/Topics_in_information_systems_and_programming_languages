@@ -1,4 +1,4 @@
-module miniProjectV2
+module miniProject
 
 go 1.18
 
