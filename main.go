@@ -10,7 +10,7 @@ import (
 func main() {
 	dbFolder.CreateDb()
 	defer dbFolder.KillDb()
-	fmt.Println("asdPeleg")
+	fmt.Println("Peleg123")
 
 	p1 := EntitiesFolder.NewPerson("peleg", "gmail1", "go")
 	p2 := EntitiesFolder.NewPerson("peleg", "gmail2", "go")
