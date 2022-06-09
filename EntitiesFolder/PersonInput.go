@@ -8,8 +8,8 @@ import (
 
 type PersonInput struct {
 	Name    string `json:"name"`
-	Email   string `json:"email"`
-	FavProg string `json:"favProg"`
+	Email   string `json:"emails"`
+	FavProg string `json:"favoriteProgrammingLanguage"`
 }
 
 func NewPersonInput(name string, email string, favProg string) PersonInput {

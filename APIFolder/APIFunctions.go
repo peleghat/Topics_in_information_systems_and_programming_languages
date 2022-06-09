@@ -17,6 +17,7 @@ func AddPerson(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Errorf("a person with email %s contains illegal values", newPersonInput.Email).Error()))
+		return
 	}
 	p := EntitiesFolder.NewPerson(newPersonInput.Name, newPersonInput.Email, newPersonInput.FavProg)
 	dbErr := dbFolder.InsertPerson(p)
@@ -37,12 +38,14 @@ func AddPerson(w http.ResponseWriter, r *http.Request) {
 				w.Write([]byte(fmt.Errorf("unknown error has occured").Error()))
 			}
 		}
+		return
+	} else { // success
+		w.Header().Set("Location", fmt.Sprintf("/api/people/%s", p.GetId()))
+		w.Header().Set("x-Created-Id", p.GetId())
+		w.WriteHeader(http.StatusCreated)
+		w.Write([]byte("person created successfuly"))
+		return
 	}
-	// success
-	w.Header().Set("Location", fmt.Sprintf("/api/people/%s", p.GetId()))
-	w.Header().Set("x-Created-Id", p.GetId())
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("Person created successfully"))
 }
 
 func GetAllPersons(w http.ResponseWriter, r *http.Request) {

@@ -61,7 +61,7 @@ func CreateDb() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("db was created")
+	fmt.Println("db was created1")
 }
 
 // KillDb function Used for debugging and testing purposes
