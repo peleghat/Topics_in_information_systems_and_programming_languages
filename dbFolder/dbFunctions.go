@@ -56,7 +56,6 @@ func GetPerson(id string) (error, EntitiesFolder.Person) {
 	err = db.QueryRow(q, id).Scan(&personOutput.ID, &personOutput.Name, &personOutput.Email, &personOutput.FavProg, &personOutput.ActiveTaskCount)
 	if err != nil {
 		return ErrorsFolder.ErrNotExist, EntitiesFolder.Person{}
-
 	}
 	return nil, personOutput
 }
@@ -94,21 +93,19 @@ func GetAllPersons() (error, []EntitiesFolder.Person) {
 // UpdatePerson function update a Person's details (getting person by his id)
 // returns a boolean which says if the update was a success or a failure
 // TODO - Maybe Change to seperate functions in the API Level
-func UpdatePerson(p EntitiesFolder.Person) bool {
+func UpdatePerson(p EntitiesFolder.Person) error {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
-		return false
+		return ErrorsFolder.ErrDbConnection
 	}
 	defer db.Close()
 	q := "UPDATE Persons SET name = ?, email = ? , favProg = ? where id = ?"
 	res, err := db.Query(q, p.GetName(), p.GetEmail(), p.GetFavProg(), p.GetId())
 	if err != nil {
-		panic(err)
-		return false
+		return ErrorsFolder.ErrDbQuery
 	}
 	defer res.Close()
-	return true
+	return nil
 }
 
 // Tasks Table Functions

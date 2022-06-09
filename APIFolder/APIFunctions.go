@@ -74,8 +74,49 @@ func GetPerson(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func UpdatePerson(w http.ResponseWriter, r *http.Request) {
-
+	params := mux.Vars(r)
+	var PersonInput EntitiesFolder.PersonInput
+	json.NewDecoder(r.Body).Decode(&PersonInput)
+	err1, PersonToUpdate := dbFolder.GetPerson(params["id"])
+	if err1 != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Errorf("A person with the id %s does not exist", params["id"]).Error()))
+	}
+	if PersonInput.Name != "" {
+		PersonToUpdate.Name = PersonInput.Name
+	}
+	if PersonInput.Email != "" {
+		PersonToUpdate.Email = PersonInput.Email
+	}
+	if PersonInput.FavProg != "" {
+		PersonToUpdate.FavProg = PersonInput.FavProg
+	}
+	err2 := dbFolder.UpdatePerson(PersonToUpdate)
+	if err2 != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusBadRequest)
+		switch err2 {
+		case ErrorsFolder.ErrDbConnection:
+			{
+				w.Write([]byte(fmt.Errorf("failed to connect to db").Error()))
+			}
+		case ErrorsFolder.ErrDbQuery:
+			{
+				w.Write([]byte(fmt.Errorf("failed to update the person with id %s to db", params["id"]).Error()))
+			}
+		default:
+			{
+				w.Write([]byte(fmt.Errorf("unknown error has occured").Error()))
+			}
+		}
+	} else {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Person updated successfully. Response body contains updated data."))
+		json.NewEncoder(w).Encode(EntitiesFolder.PersonToOutput(PersonToUpdate))
+	}
 }
+
 func DeletePerson(w http.ResponseWriter, r *http.Request) {
 
 }
