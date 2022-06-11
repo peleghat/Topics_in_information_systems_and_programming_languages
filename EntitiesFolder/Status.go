@@ -17,3 +17,13 @@ func createStatus(s string) Status {
 		return UnknownStatus
 	}
 }
+
+func StatusToString(s Status) string {
+	if s == 0 {
+		return "Active"
+	} else if s == 1 {
+		return "Done"
+	} else {
+		return "UnknownStatus"
+	}
+}

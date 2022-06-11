@@ -20,3 +20,15 @@ func createSize(s string) Size {
 		return UnknownSize
 	}
 }
+
+func SizeToString(s Size) string {
+	if s == 0 {
+		return "Small"
+	} else if s == 1 {
+		return "Medium"
+	} else if s == 2 {
+		return "Large"
+	} else {
+		return "UnknownSize"
+	}
+}

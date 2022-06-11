@@ -159,12 +159,15 @@ func GetAllPersonTasks(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Errorf("A person with the id %s does not exist", params["id"]).Error()))
 	} else {
-		ans := []interface{}{choreList, homeworkList}
+
+		ans := []interface{}{EntitiesFolder.ChoreListToChoreOutPutList(choreList),
+			EntitiesFolder.HomeWorkListToHomeWorkOutPutList(homeworkList)}
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(ans)
 	}
 }
 
+// fix add task, active count ++, if not word "active" do aturomatically
 func AddTaskToPerson(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var TaskToAdd EntitiesFolder.TaskInput
@@ -217,7 +220,6 @@ func GetPersonsTasksByStatus(w http.ResponseWriter, r *http.Request) {
 	// lol
 }
 
-// TODO - CHANGE ACTIVE and SIZE
 func GetTask(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	Chore, HomeWork, err := dbFolder.GetTask(params["id"])
@@ -238,9 +240,9 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		emptyChore := EntitiesFolder.Chore{}
 		if Chore != emptyChore {
-			json.NewEncoder(w).Encode(Chore)
+			json.NewEncoder(w).Encode(EntitiesFolder.ChoreToChoreOutPut(Chore))
 		} else {
-			json.NewEncoder(w).Encode(HomeWork)
+			json.NewEncoder(w).Encode(EntitiesFolder.HomeWorkToHomeWorkOutPut(HomeWork))
 		}
 	}
 }
