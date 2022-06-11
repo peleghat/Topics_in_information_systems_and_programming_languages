@@ -122,6 +122,7 @@ func AddHomeWork(h EntitiesFolder.HomeWork) error {
 	insertResult, err := db.Query(q, h.GetTask().GetId(), h.GetTask().GetOwnerId(), h.GetTask().GetStatus(),
 		h.GetTask().GetTaskType(), h.GetTask().GetDescription(), h.GetCourse(), h.GetDueDate(), -1) // Size is -1
 	if err != nil {
+		panic(err)
 		return ErrorsFolder.ErrDbQuery
 	}
 	defer insertResult.Close()

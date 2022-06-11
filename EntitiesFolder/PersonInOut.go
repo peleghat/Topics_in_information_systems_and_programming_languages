@@ -8,7 +8,7 @@ import (
 
 type PersonInput struct {
 	Name    string `json:"name"`
-	Email   string `json:"emails"`
+	Email   string `json:"email"`
 	FavProg string `json:"favoriteProgrammingLanguage"`
 }
 

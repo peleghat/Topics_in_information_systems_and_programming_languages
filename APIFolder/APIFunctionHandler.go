@@ -11,7 +11,6 @@ func APIFunctionHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.RequestURI
 	method := r.Method
 	params := mux.Vars(r)
-
 	switch path {
 	case "/api/people/":
 		{
@@ -66,20 +65,24 @@ func APIFunctionHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	case fmt.Sprintf("/api/tasks/%s/status", params["id"]):
-		if method == "GET" {
-			GetTaskStatus(w, r)
-		} else if method == "PUT" {
-			SetTaskStatus(w, r)
-		} else {
-			w.WriteHeader(http.StatusNotFound)
+		{
+			if method == "GET" {
+				GetTaskStatus(w, r)
+			} else if method == "PUT" {
+				SetTaskStatus(w, r)
+			} else {
+				w.WriteHeader(http.StatusNotFound)
+			}
 		}
 	case fmt.Sprintf("/api/tasks/%s/owner", params["id"]):
-		if method == "GET" {
-			GetTaskOwner(w, r)
-		} else if method == "PUT" {
-			SetTaskOwner(w, r)
-		} else {
-			w.WriteHeader(http.StatusNotFound)
+		{
+			if method == "GET" {
+				GetTaskOwner(w, r)
+			} else if method == "PUT" {
+				SetTaskOwner(w, r)
+			} else {
+				w.WriteHeader(http.StatusNotFound)
+			}
 		}
 	default:
 		{

@@ -20,7 +20,8 @@ func InitServer() {
 	// people endpoint
 	r.HandleFunc("/api/people/", APIFunctionHandler).Methods("POST", "GET")
 	r.HandleFunc("/api/people/{id}", APIFunctionHandler).Methods("GET", "PATCH", "DELETE")
-	r.HandleFunc("/api/people/{id}/tasks/", APIFunctionHandler).Methods("GET", "POST")
+	r.Path("/api/people/{id}/tasks/").Queries("status", "{status}").HandlerFunc(APIFunctionHandler).Methods("GET")
+	r.Path("/api/people/{id}/tasks/").HandlerFunc(APIFunctionHandler).Methods("GET", "POST")
 
 	// tasks endpoint
 	r.HandleFunc("/api/tasks/{id}", APIFunctionHandler).Methods("GET", "PATCH", "DELETE")
@@ -33,6 +34,9 @@ func InitServer() {
 		AllowedMethods: []string{"POST", "OPTIONS", "GET", "PATCH", "DELETE", "PUT", "FETCH"},
 		AllowedHeaders: []string{"*"},
 	})
+
+	//Different format for the optional query
+
 	log.Fatal(http.ListenAndServe(":9000", c.Handler(r)))
 
 	fmt.Printf("Server start working 9000")
