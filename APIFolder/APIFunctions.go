@@ -63,7 +63,7 @@ func GetAllPersons(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Errorf("query to the db has failed").Error()))
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(EntitiesFolder.PersonsToOutput(persons))
+		json.NewEncoder(w).Encode(persons)
 	}
 }
 
@@ -76,7 +76,7 @@ func GetPerson(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Errorf("A person with the id %s does not exist", params["id"]).Error()))
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(EntitiesFolder.PersonToOutput(person))
+		json.NewEncoder(w).Encode(person)
 	}
 }
 
@@ -120,16 +120,28 @@ func UpdatePerson(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Person updated successfully. Response body contains updated data.\n"))
-		json.NewEncoder(w).Encode(EntitiesFolder.PersonToOutput(PersonToUpdate))
+		json.NewEncoder(w).Encode(PersonToUpdate)
 	}
 }
 
 func DeletePerson(w http.ResponseWriter, r *http.Request) {
 
 }
-func GetAllPersonsTasks(w http.ResponseWriter, r *http.Request) {
 
+func GetAllPersonTasks(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	chorelist, homeworklist, err := dbFolder.GetTasksFromPerson(params["id"])
+	if err != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Errorf("A person with the id %s does not exist", params["id"]).Error()))
+	} else {
+		ans := []interface{}{chorelist, homeworklist}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(ans)
+	}
 }
+
 func AddTaskToPerson(w http.ResponseWriter, r *http.Request) {
 
 }

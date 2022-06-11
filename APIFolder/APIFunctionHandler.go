@@ -38,7 +38,7 @@ func APIFunctionHandler(w http.ResponseWriter, r *http.Request) {
 	case fmt.Sprintf("/api/people/%s/tasks/", params["id"]):
 		{
 			if method == "GET" {
-				GetAllPersonsTasks(w, r)
+				GetAllPersonTasks(w, r)
 			} else if method == "POST" {
 				AddTaskToPerson(w, r)
 			} else {

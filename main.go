@@ -9,6 +9,11 @@ import (
 func main() {
 	dbFolder.CreateDb()
 	APIFolder.InitServer()
+
+	//a := []int{1, 2, 3}
+	//b := []string{"a", "b"}
+	//ans := []interface{}{a, b}
+	//fmt.Println(ans)
 	//defer dbFolder.KillDb()
 
 	//p1 := EntitiesFolder.NewPersonInput("peleg", "peleg@gmail.com", "go")
