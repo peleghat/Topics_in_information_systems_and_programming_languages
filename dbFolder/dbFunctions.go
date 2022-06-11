@@ -26,20 +26,20 @@ func InsertPerson(p EntitiesFolder.Person) error {
 
 // DeletePerson function deletes a Person from the person table,
 // returns a boolean which says if the deletion was a success or a failure
-func DeletePerson(p EntitiesFolder.Person) bool {
+func DeletePerson(s string) error {
 	err, db := connectToDb()
 	if err != nil {
 		panic(err)
-		return false
+		return ErrorsFolder.ErrDbConnection
 	}
 	defer db.Close()
 	q := "DELETE FROM Persons WHERE id =?"
-	_, err = db.Query(q, p.GetId())
+	_, err = db.Query(q, s)
 	if err != nil {
 		panic(err.Error())
-		return false
+		return ErrorsFolder.ErrDbQuery
 	}
-	return true
+	return nil
 }
 
 // GetPerson function gets a Person from the person table by his id,

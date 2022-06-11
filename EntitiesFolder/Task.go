@@ -28,8 +28,8 @@ func (t Task) GetId() string {
 func (t Task) GetOwnerId() string {
 	return t.OwnerId
 }
-func (t Task) GetStatus() Status {
-	return t.Status
+func (t Task) GetStatus() string {
+	return string(t.Status)
 }
 func (t Task) GetTaskType() string {
 	return t.TaskType
