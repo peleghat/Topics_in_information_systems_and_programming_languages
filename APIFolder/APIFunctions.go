@@ -213,22 +213,8 @@ func AddTaskToPerson(w http.ResponseWriter, r *http.Request) {
 
 }
 
-//params := mux.Vars(r)
-//var holder TaskHolder
-//json.NewDecoder(r.Body).Decode(&holder)
-//err, t := mod.AddNewTask(params["id"], holder.Title, holder.Details, holder.Status, holder.DueDate)
-//
-//if err.GetError() != nil {
-//w.Header().Set("Content-Type", "text/plain")
-//w.WriteHeader(getAPIStatusForError(err))
-//w.Write([]byte (err.Error()))
-//} else {
-//w.Header().Set("Location",fmt.Sprintf("/api/tasks/%s", t.GetTaskId()))
-//w.Header().Set("x-Created-Id", t.GetTaskId())
-//w.WriteHeader(http.StatusCreated)
-//}
 func GetPersonsTasksByStatus(w http.ResponseWriter, r *http.Request) {
-
+	// lol
 }
 
 // TODO - CHANGE ACTIVE and SIZE
