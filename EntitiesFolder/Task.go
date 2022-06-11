@@ -31,6 +31,9 @@ func (t Task) GetOwnerId() string {
 func (t Task) GetStatus() Status {
 	return t.Status
 }
+func (t Task) GetStatusStr() string {
+	return string(t.Status)
+}
 func (t Task) GetTaskType() string {
 	return t.TaskType
 }

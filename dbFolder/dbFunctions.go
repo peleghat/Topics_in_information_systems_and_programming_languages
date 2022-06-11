@@ -112,42 +112,38 @@ func UpdatePerson(p EntitiesFolder.Person) error {
 
 // AddHomeWork function inserts a new HomeWork to the tasks table,
 // returns a boolean which says if the insertion was a success or a failure
-func AddHomeWork(h EntitiesFolder.HomeWork) bool {
+func AddHomeWork(h EntitiesFolder.HomeWork) error {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
-		return false
+		return ErrorsFolder.ErrDbConnection
 	}
 	defer db.Close()
 	q := "INSERT INTO Tasks VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)"
 	insertResult, err := db.Query(q, h.GetTask().GetId(), h.GetTask().GetOwnerId(), h.GetTask().GetStatus(),
 		h.GetTask().GetTaskType(), h.GetTask().GetDescription(), h.GetCourse(), h.GetDueDate(), -1) // Size is -1
 	if err != nil {
-		panic(err)
-		return false
+		return ErrorsFolder.ErrDbQuery
 	}
 	defer insertResult.Close()
-	return true
+	return nil
 }
 
 // AddChore function inserts a new HomeWork to the tasks table,
 // returns a boolean which says if the insertion was a success or a failure
-func AddChore(c EntitiesFolder.Chore) bool {
+func AddChore(c EntitiesFolder.Chore) error {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
-		return false
+		return ErrorsFolder.ErrDbConnection
 	}
 	defer db.Close()
 	q := "INSERT INTO Tasks VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)"
 	insertResult, err := db.Query(q, c.GetTask().GetId(), c.GetTask().GetOwnerId(), c.GetTask().GetStatus(),
 		c.GetTask().GetTaskType(), c.GetTask().GetDescription(), nil, nil, c.GetSize()) // CourseName and DueDate is nil
 	if err != nil {
-		panic(err)
-		return false
+		return ErrorsFolder.ErrDbQuery
 	}
 	defer insertResult.Close()
-	return true
+	return nil
 }
 
 // GetTaskFromDb is a helper function which gets a task id, and returns the corresponding task instance

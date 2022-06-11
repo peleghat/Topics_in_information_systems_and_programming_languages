@@ -9,9 +9,9 @@ const (
 )
 
 func createStatus(s string) Status {
-	if s == "Active" {
+	if s == "Active" || s == "active" {
 		return Active
-	} else if s == "Done" {
+	} else if s == "Done" || s == "done" {
 		return Done
 	} else {
 		return UnknownStatus
