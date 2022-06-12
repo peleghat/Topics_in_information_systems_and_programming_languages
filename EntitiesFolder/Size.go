@@ -32,3 +32,15 @@ func SizeToString(s Size) string {
 		return "UnknownSize"
 	}
 }
+
+func SizeStrToInt(s string) int {
+	if s == "Small" {
+		return 0
+	} else if s == "Medium" {
+		return 1
+	} else if s == "Large" {
+		return 2
+	} else {
+		return -1
+	}
+}

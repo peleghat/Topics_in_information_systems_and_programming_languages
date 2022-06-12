@@ -1,6 +1,7 @@
 package dbFolder
 
 import (
+	"fmt"
 	"miniProject/EntitiesFolder"
 	"miniProject/ErrorsFolder"
 )
@@ -29,14 +30,12 @@ func InsertPerson(p EntitiesFolder.Person) error {
 func DeletePerson(s string) error {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
 		return ErrorsFolder.ErrDbConnection
 	}
 	defer db.Close()
 	q := "DELETE FROM Persons WHERE id =?"
 	_, err = db.Query(q, s)
 	if err != nil {
-		panic(err.Error())
 		return ErrorsFolder.ErrDbQuery
 	}
 	return nil
@@ -152,6 +151,27 @@ func IncTaskToPerson(id string) error {
 	return nil
 }
 
+func DecTaskToPerson(id string) error {
+	err, db := connectToDb()
+	if err != nil {
+		return ErrorsFolder.ErrDbConnection
+	}
+	defer db.Close()
+	err, personToDec := GetPerson(id)
+	if err != nil {
+		return ErrorsFolder.ErrNotExist
+	}
+
+	update := personToDec.DecActiveTaskCount()
+	q := "UPDATE Persons SET ActiveTaskCount = ? where id = ?"
+	res, err := db.Query(q, update, id)
+	if err != nil {
+		return ErrorsFolder.ErrDbQuery
+	}
+	defer res.Close()
+	return nil
+}
+
 // AddChore function inserts a new HomeWork to the tasks table,
 // returns an error which says if the insertion was a success or a failure
 func AddChore(c EntitiesFolder.Chore) error {
@@ -176,49 +196,48 @@ func AddChore(c EntitiesFolder.Chore) error {
 
 // GetTaskFromDb is a helper function which gets a task id, and returns the corresponding task instance
 // if it succeeds, else returns an empty task instance
-func GetTaskFromDb(id string) EntitiesFolder.Task {
+func GetTaskFromDb(id string) (error, EntitiesFolder.Task) {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
-		return EntitiesFolder.Task{}
+		return ErrorsFolder.ErrDbConnection, EntitiesFolder.Task{}
 	}
 	defer db.Close()
 	q := "SELECT id,ownerId,status,taskType,description FROM Tasks WHERE id =?"
 	var taskOutput EntitiesFolder.Task
 	err = db.QueryRow(q, id).Scan(&taskOutput.Id, &taskOutput.OwnerId, &taskOutput.Status, &taskOutput.TaskType, &taskOutput.Description)
 	if err != nil {
-		panic(err)
-		return EntitiesFolder.Task{}
+		return ErrorsFolder.ErrNotExist, EntitiesFolder.Task{}
 	}
-	return taskOutput
+	return nil, taskOutput
 }
 
 // GetChoreFromDb is a helper function which gets a task id, and returns the corresponding Chore instance
 // if it succeeds, else returns an empty Chore instance
-func GetChoreFromDb(id string) EntitiesFolder.Chore {
+func GetChoreFromDb(id string) (error, EntitiesFolder.Chore) {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
-		return EntitiesFolder.Chore{}
+		return ErrorsFolder.ErrDbConnection, EntitiesFolder.Chore{}
 	}
 	defer db.Close()
 	q := "SELECT size_chore FROM Tasks WHERE id =?"
 	var size int
 	err = db.QueryRow(q, id).Scan(&size)
 	if err != nil {
-		panic(err)
-		return EntitiesFolder.Chore{}
+		return ErrorsFolder.ErrNotExist, EntitiesFolder.Chore{}
 	}
-	return EntitiesFolder.NewChore(EntitiesFolder.Size(size), GetTaskFromDb(id))
+	err2, task := GetTaskFromDb(id)
+	if err2 != nil {
+		return ErrorsFolder.ErrNotExist, EntitiesFolder.Chore{}
+	}
+	return nil, EntitiesFolder.NewChore(EntitiesFolder.Size(size), task)
 }
 
 // GetHomeWorkFromDb is a helper function which gets a task id, and returns the corresponding HomeWork instance
 // if it succeeds, else returns an empty HomeWork instance
-func GetHomeWorkFromDb(id string) EntitiesFolder.HomeWork {
+func GetHomeWorkFromDb(id string) (error, EntitiesFolder.HomeWork) {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
-		return EntitiesFolder.HomeWork{}
+		return ErrorsFolder.ErrDbConnection, EntitiesFolder.HomeWork{}
 	}
 	defer db.Close()
 	q := "SELECT course_homework, dueDate_homework FROM Tasks WHERE id =?"
@@ -226,10 +245,13 @@ func GetHomeWorkFromDb(id string) EntitiesFolder.HomeWork {
 	var _DueDate string
 	err = db.QueryRow(q, id).Scan(&_Course, &_DueDate)
 	if err != nil {
-		panic(err)
-		return EntitiesFolder.HomeWork{}
+		return ErrorsFolder.ErrNotExist, EntitiesFolder.HomeWork{}
 	}
-	return EntitiesFolder.NewHomeWork(_Course, EntitiesFolder.ClockUpdate(_DueDate), GetTaskFromDb(id))
+	err2, task := GetTaskFromDb(id)
+	if err2 != nil {
+		return ErrorsFolder.ErrNotExist, EntitiesFolder.HomeWork{}
+	}
+	return nil, EntitiesFolder.NewHomeWork(_Course, EntitiesFolder.ClockUpdate(_DueDate), task)
 }
 
 // GetTask function gets a task id and returns the corresponding Chore/HomeWork instance
@@ -237,15 +259,25 @@ func GetHomeWorkFromDb(id string) EntitiesFolder.HomeWork {
 func GetTask(id string) (EntitiesFolder.Chore, EntitiesFolder.HomeWork, error) {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
 		return EntitiesFolder.Chore{}, EntitiesFolder.HomeWork{}, ErrorsFolder.ErrDbConnection
 	}
 	defer db.Close()
-	task := GetTaskFromDb(id)
+	err2, task := GetTaskFromDb(id)
+	if err2 != nil {
+		return EntitiesFolder.Chore{}, EntitiesFolder.HomeWork{}, ErrorsFolder.ErrNotExist
+	}
 	if task.GetTaskType() == "Chore" {
-		return GetChoreFromDb(id), EntitiesFolder.HomeWork{}, nil
+		err1, chore := GetChoreFromDb(id)
+		if err1 != nil {
+			return EntitiesFolder.Chore{}, EntitiesFolder.HomeWork{}, ErrorsFolder.ErrNotExist
+		}
+		return chore, EntitiesFolder.HomeWork{}, nil
 	} else if task.GetTaskType() == "Homework" {
-		return EntitiesFolder.Chore{}, GetHomeWorkFromDb(id), nil
+		err3, homework := GetHomeWorkFromDb(id)
+		if err3 != nil {
+			return EntitiesFolder.Chore{}, EntitiesFolder.HomeWork{}, ErrorsFolder.ErrNotExist
+		}
+		return EntitiesFolder.Chore{}, homework, nil
 	} else {
 		return EntitiesFolder.Chore{}, EntitiesFolder.HomeWork{}, ErrorsFolder.ErrIllegalValues
 	}
@@ -256,13 +288,11 @@ func GetTask(id string) (EntitiesFolder.Chore, EntitiesFolder.HomeWork, error) {
 func GetAllTTasks() ([]EntitiesFolder.Chore, []EntitiesFolder.HomeWork, error) {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
 		return []EntitiesFolder.Chore{}, []EntitiesFolder.HomeWork{}, ErrorsFolder.ErrDbConnection
 	}
 	defer db.Close()
 	TaskIds, err := db.Query("SELECT id FROM Tasks")
 	if err != nil {
-		panic(err.Error())
 		return []EntitiesFolder.Chore{}, []EntitiesFolder.HomeWork{}, ErrorsFolder.ErrDbQuery
 	}
 	var ChoreList []EntitiesFolder.Chore
@@ -273,12 +303,10 @@ func GetAllTTasks() ([]EntitiesFolder.Chore, []EntitiesFolder.HomeWork, error) {
 		var _id string
 		err = TaskIds.Scan(&_id)
 		if err != nil {
-			panic(err)
 			return []EntitiesFolder.Chore{}, []EntitiesFolder.HomeWork{}, ErrorsFolder.ErrNotExist
 		}
-		Chore, HomeWork, err := GetTask(_id)
-		if err != nil {
-			panic(err)
+		Chore, HomeWork, err2 := GetTask(_id)
+		if err2 != nil {
 			return []EntitiesFolder.Chore{}, []EntitiesFolder.HomeWork{}, ErrorsFolder.ErrNotExist
 		}
 		if Chore != emptyChore {
@@ -294,37 +322,68 @@ func GetAllTTasks() ([]EntitiesFolder.Chore, []EntitiesFolder.HomeWork, error) {
 // DeleteTask function deletes a Task from the Tasks table,
 // returns a boolean which says if the deletion was a success or a failure
 // Gets a task!
-func DeleteTask(t EntitiesFolder.Task) bool {
+func DeleteTask(taskId string) error {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
-		return false
+		return ErrorsFolder.ErrDbConnection
+	}
+	err, task := GetTaskFromDb(taskId)
+	if err != nil {
+		return ErrorsFolder.ErrNotExist
+	}
+	err3 := DecTaskToPerson(task.GetOwnerId())
+	if err3 != nil {
+		return ErrorsFolder.ErrNotExist
 	}
 	defer db.Close()
 	q := "DELETE FROM Tasks WHERE id =?"
-	_, err = db.Query(q, t.GetId())
+	_, err = db.Query(q, taskId)
 	if err != nil {
-		panic(err.Error())
-		return false
+		return ErrorsFolder.ErrNotExist
 	}
-	return true
+	return nil
 }
 
 // UpdateTask function update a Task's details (getting the task by its id)
 // returns a boolean which says if the update was a success or a failure
-func UpdateTask(t EntitiesFolder.TaskInput, taskId string) error {
+func UpdateTask(c EntitiesFolder.ChoreOutput, h EntitiesFolder.HomeWorkOutput) error {
 	err, db := connectToDb()
 	if err != nil {
 		return ErrorsFolder.ErrDbConnection
 	}
 	defer db.Close()
-	q := "UPDATE Tasks SET status = ?, description = ?, course_homework=?, dueDate_homework=?, size_chore , where id = ?"
-	res, err := db.Query(q, t.Status, t.Description, t.Course, t.DueDate, t.Size, taskId)
-	if err != nil {
-		return ErrorsFolder.ErrDbQuery
+	emptyChore := EntitiesFolder.ChoreOutput{}
+	emptyHomework := EntitiesFolder.HomeWorkOutput{}
+	if c == emptyChore {
+		//homework update
+		status := EntitiesFolder.StatusStrToInt(h.Status)
+		dueDate := EntitiesFolder.ClockUpdate(h.DueDate)
+		q := "UPDATE Tasks SET status = ?, description = ?, course_homework=?, dueDate_homework=? where id = ?"
+		res, err := db.Query(q, status, h.Description, h.Course, dueDate, h.Id)
+		if err != nil {
+			return ErrorsFolder.ErrDbQuery
+		}
+		defer res.Close()
+		return nil
+
+	} else if h == emptyHomework {
+		// chore update
+		status := EntitiesFolder.StatusStrToInt(c.Status)
+		//desc := c.Description
+		size := EntitiesFolder.SizeStrToInt(c.Size)
+		cid := c.Id
+		q := "UPDATE Tasks SET status = ?, description = ?, size_chore= ? where id = ?"
+		res, err := db.Query(q, status, c.Description, size, cid)
+		if err != nil {
+			fmt.Println("chore failed")
+			return ErrorsFolder.ErrDbQuery
+		}
+		defer res.Close()
+		return nil
+	} else {
+		return ErrorsFolder.ErrNotExist
+
 	}
-	defer res.Close()
-	return nil
 }
 
 // GetTasksFromPerson function returns the list of tasks of a specific person
@@ -332,14 +391,12 @@ func UpdateTask(t EntitiesFolder.TaskInput, taskId string) error {
 func GetTasksFromPerson(personId string) ([]EntitiesFolder.Chore, []EntitiesFolder.HomeWork, error) {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
 		return []EntitiesFolder.Chore{}, []EntitiesFolder.HomeWork{}, ErrorsFolder.ErrDbConnection
 	}
 	defer db.Close()
 	q := "SELECT id FROM Tasks WHERE ownerId = ?"
 	TaskIds, err := db.Query(q, personId)
 	if err != nil {
-		panic(err)
 		return []EntitiesFolder.Chore{}, []EntitiesFolder.HomeWork{}, ErrorsFolder.ErrDbQuery
 	}
 	var ChoreList []EntitiesFolder.Chore
@@ -350,12 +407,10 @@ func GetTasksFromPerson(personId string) ([]EntitiesFolder.Chore, []EntitiesFold
 		var _id string
 		err = TaskIds.Scan(&_id)
 		if err != nil {
-			panic(err)
 			return []EntitiesFolder.Chore{}, []EntitiesFolder.HomeWork{}, ErrorsFolder.ErrNotExist
 		}
-		Chore, HomeWork, err := GetTask(_id)
-		if err != nil {
-			panic(err)
+		Chore, HomeWork, err2 := GetTask(_id)
+		if err2 != nil {
 			return []EntitiesFolder.Chore{}, []EntitiesFolder.HomeWork{}, ErrorsFolder.ErrNotExist
 		}
 		if Chore != emptyChore {

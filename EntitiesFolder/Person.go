@@ -63,6 +63,7 @@ func (p Person) IncActiveTaskCount() int {
 }
 
 // DecActiveTaskCount Decrement Active Task counter
-func (p Person) DecActiveTaskCount() {
+func (p Person) DecActiveTaskCount() int {
 	p.ActiveTaskCount--
+	return p.ActiveTaskCount
 }

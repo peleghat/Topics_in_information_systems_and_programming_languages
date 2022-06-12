@@ -24,3 +24,10 @@ func StatusToString(s Status) string {
 		return "UnknownStatus"
 	}
 }
+
+func StatusStrToInt(s string) int {
+	if s == "Done" || s == "done" {
+		return 1
+	}
+	return 0
+}

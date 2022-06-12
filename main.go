@@ -2,13 +2,14 @@ package main
 
 import (
 	_ "github.com/go-sql-driver/mysql"
+	"miniProject/APIFolder"
 	"miniProject/dbFolder"
 )
 
 func main() {
 	dbFolder.CreateDb()
 	//defer dbFolder.KillDb()
-	//APIFolder.InitServer()
+	APIFolder.InitServer()
 	//p := EntitiesFolder.Person{}
 	//if p == EntitiesFolder.Person{} {
 	//	fmt.Println()
