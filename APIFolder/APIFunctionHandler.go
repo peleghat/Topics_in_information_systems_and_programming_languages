@@ -6,6 +6,9 @@ import (
 	"net/http"
 )
 
+// APIFunctionHandler function maps the path of the api request to the relevant function that
+// Changes/gets data from the database according to the endpoint that we got.
+// if fails, returns an error status not found
 func APIFunctionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	path := r.RequestURI

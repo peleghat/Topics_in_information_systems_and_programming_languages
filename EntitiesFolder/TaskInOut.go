@@ -1,5 +1,7 @@
 package EntitiesFolder
 
+//	middle struct between the input from the api to the persons' struct.
+
 type TaskInput struct {
 	Status      string `json:"status"`
 	TaskType    string `json:"type"`
@@ -10,13 +12,13 @@ type TaskInput struct {
 }
 
 func TaskToChore(t TaskInput, ownerid string) Chore {
-	taskOutput := NewTask(ownerid, createStatus(t.Status), t.TaskType, t.Description)
+	taskOutput := NewTask(ownerid, CreateStatus(t.Status), t.TaskType, t.Description)
 	output := NewChore(CreateSize(t.Size), taskOutput)
 	return output
 }
 
 func TaskToHomework(t TaskInput, ownerid string) HomeWork {
-	taskOutput := NewTask(ownerid, createStatus(t.Status), t.TaskType, t.Description)
+	taskOutput := NewTask(ownerid, CreateStatus(t.Status), t.TaskType, t.Description)
 	output := NewHomeWork(t.Course, ClockUpdate(t.DueDate), taskOutput)
 	return output
 }

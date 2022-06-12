@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// InitServer function creates a new mux server, define its methods, and defines the cors (for the swagger)
 func InitServer() {
 	// Init router
 	r := mux.NewRouter()
@@ -29,11 +30,14 @@ func InitServer() {
 	r.HandleFunc("/api/tasks/{id}/owner", APIFunctionHandler).Methods("GET", "PUT")
 	http.Handle("/", r)
 
+	// cors
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
 		AllowedMethods: []string{"POST", "OPTIONS", "GET", "PATCH", "DELETE", "PUT", "FETCH"},
 		AllowedHeaders: []string{"*"},
 	})
+
+	// Start to listen and server
 	log.Fatal(http.ListenAndServe(":9000", c.Handler(r)))
-	fmt.Printf("Server start working 9000")
+	fmt.Printf("Server start working on port 9000")
 }

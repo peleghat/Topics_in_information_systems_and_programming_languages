@@ -8,7 +8,7 @@ const (
 	UnknownStatus = -1
 )
 
-func createStatus(s string) Status {
+func CreateStatus(s string) Status {
 	if s == "Done" || s == "done" {
 		return Done
 	}

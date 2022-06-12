@@ -1,6 +1,5 @@
 package EntitiesFolder
 
-// TODO - addTask(t) - Using IncActiveTaskCount and DecActiveTaskCount, listTasks()
 import (
 	"github.com/google/uuid"
 )

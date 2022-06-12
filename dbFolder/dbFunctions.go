@@ -9,7 +9,7 @@ import (
 // Persons Table Functions
 
 // InsertPerson function inserts a new Person to the person table,
-// returns a boolean which says if the insertion was a success or a failure
+// returns nil if the insertion was a success else an error
 func InsertPerson(p EntitiesFolder.Person) error {
 	err, db := connectToDb()
 	if err != nil {
@@ -26,7 +26,7 @@ func InsertPerson(p EntitiesFolder.Person) error {
 }
 
 // DeletePerson function deletes a Person from the person table,
-// returns a boolean which says if the deletion was a success or a failure
+// returns nil if the deletion was a success else an error
 func DeletePerson(s string) error {
 	err, db := connectToDb()
 	if err != nil {
@@ -42,7 +42,7 @@ func DeletePerson(s string) error {
 }
 
 // GetPerson function gets a Person from the person table by his id,
-// returns the person's instance if it succeeds else returns an empty person instance
+// returns the person's instance if it succeeds else returns an empty person instance and an error
 func GetPerson(id string) (error, EntitiesFolder.Person) {
 	err, db := connectToDb()
 	if err != nil {
@@ -59,7 +59,7 @@ func GetPerson(id string) (error, EntitiesFolder.Person) {
 }
 
 // GetAllPersons function returns the list of all the persons in the person table
-// if it succeeds else returns an empty person list
+// if it succeeds else returns an empty person list and error
 func GetAllPersons() (error, []EntitiesFolder.Person) {
 	err, db := connectToDb()
 	if err != nil {
@@ -68,7 +68,7 @@ func GetAllPersons() (error, []EntitiesFolder.Person) {
 	defer db.Close()
 	personId, err := db.Query("SELECT id FROM Persons")
 	if err != nil {
-		return ErrorsFolder.ErrNotExist, []EntitiesFolder.Person{}
+		return ErrorsFolder.ErrDbQuery, []EntitiesFolder.Person{}
 	}
 	var personList []EntitiesFolder.Person
 	for personId.Next() {
@@ -89,8 +89,7 @@ func GetAllPersons() (error, []EntitiesFolder.Person) {
 }
 
 // UpdatePerson function update a Person's details (getting person by his id)
-// returns a boolean which says if the update was a success or a failure
-// TODO - Maybe Change to seperate functions in the API Level
+// returns nil if the update was a success else an error
 func UpdatePerson(p EntitiesFolder.Person) error {
 	err, db := connectToDb()
 	if err != nil {
@@ -130,6 +129,8 @@ func AddHomeWork(h EntitiesFolder.HomeWork) error {
 	return nil
 }
 
+// IncTaskToPerson function increment active task count field on a given person
+// returns nil if the insertion was a success else an error
 func IncTaskToPerson(id string) error {
 	err, db := connectToDb()
 	if err != nil {
@@ -151,6 +152,8 @@ func IncTaskToPerson(id string) error {
 	return nil
 }
 
+// DecTaskToPerson function decrement active task count field on a given person
+// returns nil if the insertion was a success else an error
 func DecTaskToPerson(id string) error {
 	err, db := connectToDb()
 	if err != nil {
@@ -195,7 +198,7 @@ func AddChore(c EntitiesFolder.Chore) error {
 }
 
 // GetTaskFromDb is a helper function which gets a task id, and returns the corresponding task instance
-// if it succeeds, else returns an empty task instance
+// if it succeeds, else returns an empty task instance and an error
 func GetTaskFromDb(id string) (error, EntitiesFolder.Task) {
 	err, db := connectToDb()
 	if err != nil {
@@ -212,7 +215,7 @@ func GetTaskFromDb(id string) (error, EntitiesFolder.Task) {
 }
 
 // GetChoreFromDb is a helper function which gets a task id, and returns the corresponding Chore instance
-// if it succeeds, else returns an empty Chore instance
+// if it succeeds, else returns an empty Chore instance and an error
 func GetChoreFromDb(id string) (error, EntitiesFolder.Chore) {
 	err, db := connectToDb()
 	if err != nil {
@@ -233,7 +236,7 @@ func GetChoreFromDb(id string) (error, EntitiesFolder.Chore) {
 }
 
 // GetHomeWorkFromDb is a helper function which gets a task id, and returns the corresponding HomeWork instance
-// if it succeeds, else returns an empty HomeWork instance
+// if it succeeds, else returns an empty HomeWork instance and an error
 func GetHomeWorkFromDb(id string) (error, EntitiesFolder.HomeWork) {
 	err, db := connectToDb()
 	if err != nil {
@@ -255,7 +258,7 @@ func GetHomeWorkFromDb(id string) (error, EntitiesFolder.HomeWork) {
 }
 
 // GetTask function gets a task id and returns the corresponding Chore/HomeWork instance
-// if it succeeds, else returns an empty tuple of Chore and HomeWork instances
+// if it succeeds, else returns an empty tuple of Chore and HomeWork instances and an error
 func GetTask(id string) (EntitiesFolder.Chore, EntitiesFolder.HomeWork, error) {
 	err, db := connectToDb()
 	if err != nil {
@@ -284,7 +287,7 @@ func GetTask(id string) (EntitiesFolder.Chore, EntitiesFolder.HomeWork, error) {
 }
 
 // GetAllTTasks function returns the list of all the Tasks in the Task table
-// if it succeeds else returns an empty HomeWork list and an empty Chore List
+// if it succeeds else returns an empty HomeWork list,empty Chore List and an error
 func GetAllTTasks() ([]EntitiesFolder.Chore, []EntitiesFolder.HomeWork, error) {
 	err, db := connectToDb()
 	if err != nil {
@@ -320,8 +323,7 @@ func GetAllTTasks() ([]EntitiesFolder.Chore, []EntitiesFolder.HomeWork, error) {
 }
 
 // DeleteTask function deletes a Task from the Tasks table,
-// returns a boolean which says if the deletion was a success or a failure
-// Gets a task!
+// returns nil if the deletion was a success else an error
 func DeleteTask(taskId string) error {
 	err, db := connectToDb()
 	if err != nil {
@@ -345,7 +347,7 @@ func DeleteTask(taskId string) error {
 }
 
 // UpdateTask function update a Task's details (getting the task by its id)
-// returns a boolean which says if the update was a success or a failure
+// returns nil if the update was a success else an error
 func UpdateTask(c EntitiesFolder.ChoreOutput, h EntitiesFolder.HomeWorkOutput) error {
 	err, db := connectToDb()
 	if err != nil {
@@ -387,7 +389,7 @@ func UpdateTask(c EntitiesFolder.ChoreOutput, h EntitiesFolder.HomeWorkOutput) e
 }
 
 // GetTasksFromPerson function returns the list of tasks of a specific person
-// if succeeds else, returns an empty Chore list and an empty HomeWork List
+// if succeeds else, returns an empty Chore list, empty HomeWork List and an error
 func GetTasksFromPerson(personId string) ([]EntitiesFolder.Chore, []EntitiesFolder.HomeWork, error) {
 	err, db := connectToDb()
 	if err != nil {
@@ -424,7 +426,7 @@ func GetTasksFromPerson(personId string) ([]EntitiesFolder.Chore, []EntitiesFold
 }
 
 // GetPersonFromTask function returns the corresponding person to a specific task
-// if succeeds, else returns an empty person instance
+// if succeeds, else returns an empty person instance and an error
 func GetPersonFromTask(t EntitiesFolder.Task) (error, EntitiesFolder.Person) {
 	err, db := connectToDb()
 	if err != nil {
@@ -438,4 +440,60 @@ func GetPersonFromTask(t EntitiesFolder.Task) (error, EntitiesFolder.Person) {
 	} else {
 		return nil, personId
 	}
+}
+
+// UpdateTaskStatus function updates the status of the task
+// returns nil if the update was a success else an error
+func UpdateTaskStatus(taskId string, newStatus EntitiesFolder.Status) error {
+	err, db := connectToDb()
+	if err != nil {
+		return ErrorsFolder.ErrDbConnection
+	}
+	defer db.Close()
+	err3, _ := GetTaskFromDb(taskId)
+	if err3 != nil {
+		return ErrorsFolder.ErrNotExist
+	}
+	q := "UPDATE Tasks SET status = ? where id = ?"
+	res, err2 := db.Query(q, newStatus, taskId)
+
+	if err2 != nil {
+		return ErrorsFolder.ErrNotExist
+	}
+	defer res.Close()
+	return nil
+}
+
+// SetTaskOwner function updates the owner of the task
+// returns nil if the update was a success else an error
+func SetTaskOwner(taskId string, newOwnerId string) error {
+	err1, db := connectToDb()
+	if err1 != nil {
+		return ErrorsFolder.ErrDbConnection
+	}
+	defer db.Close()
+	err2, _ := GetPerson(newOwnerId)
+	if err2 != nil { // owner not exists
+		return ErrorsFolder.ErrNotExist
+	}
+	err3, task := GetTaskFromDb(taskId)
+	if err3 != nil { // task not exists
+		return ErrorsFolder.ErrNotExist
+	}
+	personToDec := task.OwnerId
+	q := "UPDATE Tasks SET ownerId = ? where id = ?"
+	res, err4 := db.Query(q, newOwnerId, taskId)
+	if err4 != nil {
+		return ErrorsFolder.ErrDbQuery
+	}
+	err5 := IncTaskToPerson(newOwnerId)
+	if err5 != nil {
+		return ErrorsFolder.ErrDbQuery
+	}
+	err6 := DecTaskToPerson(personToDec)
+	if err6 != nil {
+		return ErrorsFolder.ErrDbQuery
+	}
+	defer res.Close()
+	return nil
 }
