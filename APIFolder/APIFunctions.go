@@ -159,7 +159,7 @@ func GetAllPersonTasks(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Errorf("A person with the id %s does not exist", params["id"]).Error()))
 	} else {
-
+		// TODO - add all 4 cases to interface
 		ans := []interface{}{EntitiesFolder.ChoreListToChoreOutPutList(choreList),
 			EntitiesFolder.HomeWorkListToHomeWorkOutPutList(homeworkList)}
 		w.WriteHeader(http.StatusOK)

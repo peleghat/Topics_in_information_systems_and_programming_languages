@@ -34,11 +34,6 @@ func InitServer() {
 		AllowedMethods: []string{"POST", "OPTIONS", "GET", "PATCH", "DELETE", "PUT", "FETCH"},
 		AllowedHeaders: []string{"*"},
 	})
-
-	//Different format for the optional query
-
 	log.Fatal(http.ListenAndServe(":9000", c.Handler(r)))
-
 	fmt.Printf("Server start working 9000")
-
 }
