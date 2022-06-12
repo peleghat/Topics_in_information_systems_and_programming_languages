@@ -160,7 +160,7 @@ func GetAllPersonTasks(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Errorf("A person with the id %s does not exist", params["id"]).Error()))
 	} else {
-
+		// TODO - add all 4 cases to interface
 		ans := []interface{}{EntitiesFolder.ChoreListToChoreOutPutList(choreList),
 			EntitiesFolder.HomeWorkListToHomeWorkOutPutList(homeworkList)}
 		w.WriteHeader(http.StatusOK)
@@ -168,58 +168,7 @@ func GetAllPersonTasks(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// AddTaskToPerson fix add task, active count ++, if not word "active" do aturomatically
 func AddTaskToPerson(w http.ResponseWriter, r *http.Request) {
-	//bodyBytes, _ := io.ReadAll(r.Body)
-	//str := string(bodyBytes)
-	//i := strings.Index(str, "email")
-	//
-	//w.Write([]byte(string(j[5])))
-	//params := mux.Vars(r)
-	//var TaskToAdd EntitiesFolder.TaskInput
-	//json.NewDecoder(r.Body).Decode(&TaskToAdd)
-	//if TaskToAdd.TaskType == "chore" || TaskToAdd.TaskType == "Chore" {
-	//	choreToAdd := EntitiesFolder.TaskToChore(TaskToAdd, params["id"])
-	//	err := dbFolder.AddChore(choreToAdd)
-	//	switch err {
-	//	case ErrorsFolder.ErrDbConnection:
-	//		w.Header().Set("Content-Type", "text/plain")
-	//		w.WriteHeader(http.StatusBadRequest) //400
-	//		w.Write([]byte(fmt.Errorf("failed to connect to db").Error()))
-	//	case ErrorsFolder.ErrDbQuery:
-	//		w.Header().Set("Content-Type", "text/plain")
-	//		w.WriteHeader(http.StatusNotFound) //404
-	//		w.Write([]byte(fmt.Errorf("A person with the id %s does not exist", params["id"]).Error()))
-	//		w.Write([]byte("Requested person is not present.\n"))
-	//	}
-	//	w.Header().Set("Location", fmt.Sprintf("/api/people/%s/tasks", choreToAdd.GetTask().GetId()))
-	//	w.Header().Set("x-Created-Id", choreToAdd.GetTask().GetId())
-	//	w.Write([]byte("Task created and assigned successfully\n"))
-	//	w.WriteHeader(http.StatusCreated)
-	//} else {
-	//	HomeWorkToAdd := EntitiesFolder.TaskToHomework(TaskToAdd, params["id"])
-	//	err := dbFolder.AddHomeWork(HomeWorkToAdd)
-	//	switch err {
-	//	case ErrorsFolder.ErrDbConnection:
-	//		w.Header().Set("Content-Type", "text/plain")
-	//		w.WriteHeader(http.StatusBadRequest) //400
-	//		w.Write([]byte(fmt.Errorf("failed to connect to db").Error()))
-	//	case ErrorsFolder.ErrDbQuery:
-	//		w.Header().Set("Content-Type", "text/plain")
-	//		w.WriteHeader(http.StatusNotFound) //404
-	//		w.Write([]byte(fmt.Errorf("A person with the id %s does not exist", params["id"]).Error()))
-	//		w.Write([]byte("Requested person is not present.\n"))
-	//	default:
-	//		{
-	//			w.Write([]byte(fmt.Errorf("unknown error has occured").Error()))
-	//		}
-	//	}
-	//	w.Header().Set("Location", fmt.Sprintf("/api/tasks/%s", HomeWorkToAdd.GetTask().GetId()))
-	//	w.Header().Set("x-Created-Id", HomeWorkToAdd.GetTask().GetId())
-	//	w.WriteHeader(http.StatusCreated)
-	//
-	//}
-
 }
 
 func GetPersonsTasksByStatus(w http.ResponseWriter, r *http.Request) {
@@ -246,7 +195,7 @@ func GetPersonsTasksByStatus(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		if filteredChoreList == nil && filteredHomeWorkList == nil {
-			ans := []interface{}{filteredChoreList, filteredHomeWorkList}
+			var ans []interface{}
 			json.NewEncoder(w).Encode(ans)
 			return
 		} else if filteredChoreList == nil {
