@@ -312,21 +312,19 @@ func DeleteTask(t EntitiesFolder.Task) bool {
 
 // UpdateTask function update a Task's details (getting the task by its id)
 // returns a boolean which says if the update was a success or a failure
-func UpdateTask(t EntitiesFolder.Task) bool {
+func UpdateTask(t EntitiesFolder.TaskInput, taskId string) error {
 	err, db := connectToDb()
 	if err != nil {
-		panic(err)
-		return false
+		return ErrorsFolder.ErrDbConnection
 	}
 	defer db.Close()
-	q := "UPDATE Tasks SET status = ?, description = ? where id = ?"
-	res, err := db.Query(q, t.GetStatus(), "t.GetDescription()", t.GetId())
+	q := "UPDATE Tasks SET status = ?, description = ?, course_homework=?, dueDate_homework=?, size_chore , where id = ?"
+	res, err := db.Query(q, t.Status, t.Description, t.Course, t.DueDate, t.Size, taskId)
 	if err != nil {
-		panic(err)
-		return false
+		return ErrorsFolder.ErrDbQuery
 	}
 	defer res.Close()
-	return true
+	return nil
 }
 
 // GetTasksFromPerson function returns the list of tasks of a specific person

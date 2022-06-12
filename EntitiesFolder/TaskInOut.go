@@ -11,7 +11,7 @@ type TaskInput struct {
 
 func TaskToChore(t TaskInput, ownerid string) Chore {
 	taskOutput := NewTask(ownerid, createStatus(t.Status), t.TaskType, t.Description)
-	output := NewChore(createSize(t.Size), taskOutput)
+	output := NewChore(CreateSize(t.Size), taskOutput)
 	return output
 }
 

@@ -9,7 +9,7 @@ const (
 	UnknownSize = -1
 )
 
-func createSize(s string) Size {
+func CreateSize(s string) Size {
 	if s == "Small" {
 		return Small
 	} else if s == "Medium" {
