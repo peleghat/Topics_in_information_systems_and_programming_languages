@@ -11,7 +11,6 @@ import (
 	"miniProject/ErrorsFolder"
 	"miniProject/dbFolder"
 	"net/http"
-	"strings"
 )
 
 // AddPerson function adds a person to the database.
@@ -168,102 +167,79 @@ func GetAllPersonTasks(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// AddTaskToPerson fix add task, active count ++, if not word "active" do aturomatically
+// AddTaskToPerson fix add task, active count ++, if not word "active" do aturomatically delete fmt.println
 func AddTaskToPerson(w http.ResponseWriter, r *http.Request) {
-	//bodyBytes, _ := io.ReadAll(r.Body)
-	//str := string(bodyBytes)
-	//i := strings.Index(str, "email")
-	//
-	//w.Write([]byte(string(j[5])))
-	//params := mux.Vars(r)
-	//var TaskToAdd EntitiesFolder.TaskInput
-	//json.NewDecoder(r.Body).Decode(&TaskToAdd)
-	//if TaskToAdd.TaskType == "chore" || TaskToAdd.TaskType == "Chore" {
-	//	choreToAdd := EntitiesFolder.TaskToChore(TaskToAdd, params["id"])
-	//	err := dbFolder.AddChore(choreToAdd)
-	//	switch err {
-	//	case ErrorsFolder.ErrDbConnection:
-	//		w.Header().Set("Content-Type", "text/plain")
-	//		w.WriteHeader(http.StatusBadRequest) //400
-	//		w.Write([]byte(fmt.Errorf("failed to connect to db").Error()))
-	//	case ErrorsFolder.ErrDbQuery:
-	//		w.Header().Set("Content-Type", "text/plain")
-	//		w.WriteHeader(http.StatusNotFound) //404
-	//		w.Write([]byte(fmt.Errorf("A person with the id %s does not exist", params["id"]).Error()))
-	//		w.Write([]byte("Requested person is not present.\n"))
-	//	}
-	//	w.Header().Set("Location", fmt.Sprintf("/api/people/%s/tasks", choreToAdd.GetTask().GetId()))
-	//	w.Header().Set("x-Created-Id", choreToAdd.GetTask().GetId())
-	//	w.Write([]byte("Task created and assigned successfully\n"))
-	//	w.WriteHeader(http.StatusCreated)
-	//} else {
-	//	HomeWorkToAdd := EntitiesFolder.TaskToHomework(TaskToAdd, params["id"])
-	//	err := dbFolder.AddHomeWork(HomeWorkToAdd)
-	//	switch err {
-	//	case ErrorsFolder.ErrDbConnection:
-	//		w.Header().Set("Content-Type", "text/plain")
-	//		w.WriteHeader(http.StatusBadRequest) //400
-	//		w.Write([]byte(fmt.Errorf("failed to connect to db").Error()))
-	//	case ErrorsFolder.ErrDbQuery:
-	//		w.Header().Set("Content-Type", "text/plain")
-	//		w.WriteHeader(http.StatusNotFound) //404
-	//		w.Write([]byte(fmt.Errorf("A person with the id %s does not exist", params["id"]).Error()))
-	//		w.Write([]byte("Requested person is not present.\n"))
-	//	default:
-	//		{
-	//			w.Write([]byte(fmt.Errorf("unknown error has occured").Error()))
-	//		}
-	//	}
-	//	w.Header().Set("Location", fmt.Sprintf("/api/tasks/%s", HomeWorkToAdd.GetTask().GetId()))
-	//	w.Header().Set("x-Created-Id", HomeWorkToAdd.GetTask().GetId())
-	//	w.WriteHeader(http.StatusCreated)
-	//
-	//}
-
+	params := mux.Vars(r)
+	var TaskToAdd EntitiesFolder.TaskInput
+	json.NewDecoder(r.Body).Decode(&TaskToAdd)
+	if TaskToAdd.TaskType == "chore" || TaskToAdd.TaskType == "Chore" {
+		choreToAdd := EntitiesFolder.TaskToChore(TaskToAdd, params["id"])
+		err := dbFolder.AddChore(choreToAdd)
+		if err != nil {
+			w.Header().Set("Content-Type", "text/plain")
+			switch err {
+			case ErrorsFolder.ErrDbConnection:
+				{
+					w.Write([]byte(fmt.Errorf("failed to connect to db").Error()))
+					w.WriteHeader(http.StatusBadRequest) //400
+					return
+				}
+			case ErrorsFolder.ErrDbQuery:
+				{
+					w.Write([]byte(fmt.Errorf("A person with the id %s does not exist", params["id"]).Error()))
+					w.Write([]byte("Requested person is not present.\n"))
+					w.WriteHeader(http.StatusNotFound) //404
+					return
+				}
+			default:
+				{
+					w.Write([]byte(fmt.Errorf("unknown error has occured").Error()))
+				}
+			}
+		}
+		w.Header().Set("Location", fmt.Sprintf("/api/people/%s/tasks", choreToAdd.GetTask().GetId()))
+		w.Header().Set("x-Created-Id", choreToAdd.GetTask().GetId())
+		w.Write([]byte("Task created and assigned successfully\n"))
+		w.WriteHeader(http.StatusCreated)
+		return
+	} else if TaskToAdd.TaskType == "homework" || TaskToAdd.TaskType == "Homework" {
+		homeworkToAdd := EntitiesFolder.TaskToHomework(TaskToAdd, params["id"])
+		err := dbFolder.AddHomeWork(homeworkToAdd)
+		if err != nil {
+			w.Header().Set("Content-Type", "text/plain")
+			switch err {
+			case ErrorsFolder.ErrDbConnection:
+				{
+					w.Write([]byte(fmt.Errorf("failed to connect to db").Error()))
+					w.WriteHeader(http.StatusBadRequest) //400
+					return
+				}
+			case ErrorsFolder.ErrDbQuery:
+				{
+					w.Write([]byte(fmt.Errorf("A person with the id %s does not exist", params["id"]).Error()))
+					w.Write([]byte("Requested person is not present.\n"))
+					w.WriteHeader(http.StatusNotFound) //404
+					return
+				}
+			default:
+				{
+					w.Write([]byte(fmt.Errorf("unknown error has occured").Error()))
+				}
+			}
+		}
+		w.Header().Set("Location", fmt.Sprintf("/api/people/%s/tasks", homeworkToAdd.GetTask().GetId()))
+		w.Header().Set("x-Created-Id", homeworkToAdd.GetTask().GetId())
+		w.Write([]byte("Task created and assigned successfully\n"))
+		w.WriteHeader(http.StatusCreated)
+		return
+	} else {
+		w.Write([]byte(fmt.Errorf("Task type: %s does not exist", TaskToAdd.TaskType).Error()))
+		w.WriteHeader(http.StatusNotFound) //404
+		return
+	}
 }
 
 func GetPersonsTasksByStatus(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	fmt.Println(params["status"])
-	choreList, homeworkList, err := dbFolder.GetTasksFromPerson(params["id"])
-	choreOut := EntitiesFolder.ChoreListToChoreOutPutList(choreList)
-	HomeOut := EntitiesFolder.HomeWorkListToHomeWorkOutPutList(homeworkList)
-	var filteredChoreList []EntitiesFolder.ChoreOutput
-	var filteredHomeWorkList []EntitiesFolder.HomeWorkOutput
-	if err != nil {
-		w.Header().Set("Content-Type", "text/plain")
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Errorf("A person with the id %s does not exist", params["id"]).Error()))
-	} else {
-		for _, chore := range choreOut {
-			if strings.ToLower(chore.Status) == params["status"] {
-				filteredChoreList = append(filteredChoreList, chore)
-			}
-		}
-		for _, homeWork := range HomeOut {
-			if strings.ToLower(homeWork.Status) == params["status"] {
-				filteredHomeWorkList = append(filteredHomeWorkList, homeWork)
-			}
-		}
-		if filteredChoreList == nil && filteredHomeWorkList == nil {
-			ans := []interface{}{filteredChoreList, filteredHomeWorkList}
-			json.NewEncoder(w).Encode(ans)
-			return
-		} else if filteredChoreList == nil {
-			ans := []interface{}{filteredHomeWorkList}
-			json.NewEncoder(w).Encode(ans)
-			return
-		} else if filteredHomeWorkList == nil {
-			ans := []interface{}{filteredChoreList}
-			json.NewEncoder(w).Encode(ans)
-			return
-		} else {
-			ans := []interface{}{filteredChoreList, filteredHomeWorkList}
-			json.NewEncoder(w).Encode(ans)
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-	}
 }
 
 func GetTask(w http.ResponseWriter, r *http.Request) {
@@ -293,9 +269,54 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func UpdateTask(w http.ResponseWriter, r *http.Request) {
+func UpdateTask(w http.ResponseWriter, r *http.Request) {}
 
-}
+//	params := mux.Vars(r)
+//	var TaskInput EntitiesFolder.TaskInput
+//	json.NewDecoder(r.Body).Decode(&TaskInput)
+//	choreToUpdate, homeworkToUpdate, err1 := dbFolder.GetTask(params["id"])
+//	if err1 != nil {
+//		w.Header().Set("Content-Type", "text/plain")
+//		w.WriteHeader(http.StatusBadRequest)
+//		w.Write([]byte(fmt.Errorf("A task with the id %s does not exist", params["id"]).Error()))
+//	}
+//	if homeworkToUpdate == nil {
+//
+//	}
+//	if TaskInput.Name != "" {
+//		TaskToUpdate.Name = TaskInput.Name
+//	}
+//	if TaskInput.Email != "" {
+//		TaskToUpdate.Email = TaskInput.Email
+//	}
+//	if TaskInput.FavProg != "" {
+//		TaskToUpdate.FavProg = TaskInput.FavProg
+//	}
+//	err2 := dbFolder.UpdatePerson(TaskToUpdate)
+//	if err2 != nil {
+//		w.Header().Set("Content-Type", "text/plain")
+//		w.WriteHeader(http.StatusBadRequest)
+//		switch err2 {
+//		case ErrorsFolder.ErrDbConnection:
+//			{
+//				w.Write([]byte(fmt.Errorf("failed to connect to db").Error()))
+//			}
+//		case ErrorsFolder.ErrDbQuery:
+//			{
+//				w.Write([]byte(fmt.Errorf("failed to update the person with id %s to db", params["id"]).Error()))
+//			}
+//		default:
+//			{
+//				w.Write([]byte(fmt.Errorf("unknown error has occured").Error()))
+//			}
+//		}
+//	} else {
+//		w.WriteHeader(http.StatusOK)
+//		w.Write([]byte("Person updated successfully. Response body contains updated data.\n"))
+//		json.NewEncoder(w).Encode(TaskToUpdate)
+//	}
+//}
+
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
 
 }

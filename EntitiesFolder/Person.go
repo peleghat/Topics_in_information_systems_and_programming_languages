@@ -57,8 +57,9 @@ func (p Person) SetActiveTaskCount(_ActiveTaskCount int) {
 }
 
 // IncActiveTaskCount Increment Active Task counter
-func (p Person) IncActiveTaskCount() {
+func (p Person) IncActiveTaskCount() int {
 	p.ActiveTaskCount++
+	return p.ActiveTaskCount
 }
 
 // DecActiveTaskCount Decrement Active Task counter

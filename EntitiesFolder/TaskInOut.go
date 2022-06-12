@@ -1,14 +1,12 @@
 package EntitiesFolder
 
-import "time"
-
 type TaskInput struct {
-	Status      string    `json:"status"`
-	TaskType    string    `json:"type"`
-	Description string    `json:"description"`
-	Size        string    `json:"size,omitempty"`
-	Course      string    `json:"course,omitempty"`
-	DueDate     time.Time `json:"duedate,omitempty"`
+	Status      string `json:"status"`
+	TaskType    string `json:"type"`
+	Description string `json:"description"`
+	Size        string `json:"size,omitempty"`
+	Course      string `json:"course,omitempty"`
+	DueDate     string `json:"duedate,omitempty"`
 }
 
 func TaskToChore(t TaskInput, ownerid string) Chore {
@@ -19,7 +17,7 @@ func TaskToChore(t TaskInput, ownerid string) Chore {
 
 func TaskToHomework(t TaskInput, ownerid string) HomeWork {
 	taskOutput := NewTask(ownerid, createStatus(t.Status), t.TaskType, t.Description)
-	output := NewHomeWork(t.Course, t.DueDate, taskOutput)
+	output := NewHomeWork(t.Course, ClockUpdate(t.DueDate), taskOutput)
 	return output
 }
 
