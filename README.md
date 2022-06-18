@@ -9,7 +9,7 @@ For running locally:
 
 ```sh
 mkdir miniProject
- git clone https://github.com/peleghat/miniProject.git
+git clone https://github.com/peleghat/miniProject.git
  ```
 
 and run script from  ``main.go ``
